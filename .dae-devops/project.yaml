@@ -2,20 +2,19 @@
 primary:
     repository_name: chimpflow
     package_name: chimpflow_lib
-    one_line_description: "XChem GUI for manually targeting drop points for the Echo dispenser."
+    one_line_description: "XChem service to apply CHIMP detection to newly arrived Formulatrix Rockmaker images."
     author:
         name: David Erb
         email: david.erb@diamond.ac.uk
     project_urls:
-        GitLab: https://gitlab.diamond.ac.uk/xchem
+        GitLab: https://github.com/diamondlightsource/chimpflow
     project_scripts:
         chimpflow: "chimpflow_lib.__main__:main"
         chimpflow.cli: "chimpflow_cli.main:main"
     dependencies:
         - type: pypi
           list:
+              - xchembku
               - dls_servbase
               - dls_mainiac
               - dls_utilpack
-              - pillow
-              - numpy

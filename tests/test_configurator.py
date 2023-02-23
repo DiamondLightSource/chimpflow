@@ -6,8 +6,8 @@ import os
 import pytest
 import yaml
 
-# Exceptions.
-from chimpflow_api.exceptions import NotFound
+# Utilities.
+from dls_utilpack.describe import describe
 
 # Configurator.
 from chimpflow_lib.configurators.configurators import Configurators
@@ -15,8 +15,8 @@ from chimpflow_lib.configurators.configurators import Configurators
 # Environment variables with some extra functionality.
 from chimpflow_lib.envvar import Envvar
 
-# Utilities.
-from dls_utilpack.describe import describe
+# Exceptions.
+from chimpflow_lib.exceptions import NotFound
 
 logger = logging.getLogger(__name__)
 

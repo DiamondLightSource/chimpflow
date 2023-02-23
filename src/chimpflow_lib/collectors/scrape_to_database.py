@@ -8,11 +8,10 @@ from dls_utilpack.callsign import callsign
 from dls_utilpack.explain import explain2
 from dls_utilpack.require import require
 from PIL import Image
-
-from chimpflow_api.databases.constants import ImageFieldnames, Tablenames
+from xchembku_api.databases.constants import CrystalWellFieldnames, Tablenames
 
 # Global dataface.
-from chimpflow_api.datafaces.datafaces import chimpflow_datafaces_get_default
+from xchembku_api.datafaces.datafaces import chimpflow_datafaces_get_default
 
 # Base class for collector instances.
 from chimpflow_lib.collectors.base import Base as CollectorBase
@@ -53,7 +52,7 @@ class ScrapeToDatabase(CollectorBase):
 
         # Get all the jobs ever done.
         records = await self.__dataface.query(
-            f"SELECT {ImageFieldnames.FILENAME} FROM {Tablenames.ROCKMAKER_IMAGES}"
+            f"SELECT {CrystalWellFieldnames.FILENAME} FROM {Tablenames.CRYSTAL_WELLS}"
         )
 
         # Make an initial list of the data labels associated with any job.
@@ -175,13 +174,13 @@ class ScrapeToDatabase(CollectorBase):
 
         logger.debug(f"flushing {len(inserts)} inserts")
         await self.__dataface.execute(
-            f"INSERT INTO {Tablenames.ROCKMAKER_IMAGES}"
-            f" ({ImageFieldnames.FILENAME},"
-            f" {ImageFieldnames.ERROR},"
-            f" {ImageFieldnames.WIDTH},"
-            f" {ImageFieldnames.HEIGHT},"
-            f" {ImageFieldnames.TARGET_POSITION_X},"
-            f" {ImageFieldnames.TARGET_POSITION_Y})"
+            f"INSERT INTO {Tablenames.CRYSTAL_WELLS}"
+            f" ({CrystalWellFieldnames.FILENAME},"
+            f" {CrystalWellFieldnames.ERROR},"
+            f" {CrystalWellFieldnames.WIDTH},"
+            f" {CrystalWellFieldnames.HEIGHT},"
+            f" {CrystalWellFieldnames.TARGET_POSITION_X},"
+            f" {CrystalWellFieldnames.TARGET_POSITION_Y})"
             " VALUES (?, ?, ?, ?, ?, ?)",
             subs=inserts,
         )

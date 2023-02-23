@@ -7,7 +7,7 @@ from dls_utilpack.callsign import callsign
 from dls_utilpack.require import require
 
 # Base class which maps flask tasks to methods.
-from chimpflow_api.thing import Thing
+from dls_utilpack.thing import Thing
 
 # Base class for an aiohttp server.
 from chimpflow_lib.base_aiohttp import BaseAiohttp

@@ -10,11 +10,11 @@ from dls_utilpack.explain import explain2
 from dls_utilpack.require import require
 from dls_utilpack.substitute import substitute_string
 
-# Exceptions.
-from chimpflow_api.exceptions import NotFound
-
 # Base class which maps flask requests to methods.
 from chimpflow_lib.configurators.base import Base
+
+# Exceptions.
+from chimpflow_lib.exceptions import NotFound
 
 logger = logging.getLogger(__name__)
 

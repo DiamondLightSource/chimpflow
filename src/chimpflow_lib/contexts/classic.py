@@ -1,18 +1,15 @@
 import logging
 
-from chimpflow_lib.collectors.context import Context as CollectorContext
-
-# Base class which maps flask requests to methods.
-from chimpflow_lib.contexts.base import Base
-from chimpflow_lib.datafaces.context import Context as DatafaceContext
-from chimpflow_lib.guis.context import Context as GuiContext
-
 # Contexts.
-from dls_servbase_lib.datafaces.context import Context as DlsServbaseDatafaceContext
 from dls_utilpack.callsign import callsign
 
 # Utilities.
 from dls_utilpack.explain import explain
+
+from chimpflow_lib.collectors.context import Context as CollectorContext
+
+# Base class which maps flask requests to methods.
+from chimpflow_lib.contexts.base import Base
 
 logger = logging.getLogger(__name__)
 
@@ -29,10 +26,7 @@ class Classic(Base):
     def __init__(self, specification):
         Base.__init__(self, thing_type, specification)
 
-        self.__dls_servbase_dataface = None
-        self.__dataface = None
         self.__collector = None
-        self.__gui = None
 
     # ----------------------------------------------------------------------------------------
     async def __dead_or_alive(self, context, dead, alive):
@@ -60,10 +54,7 @@ class Classic(Base):
         dead = []
         alive = []
 
-        await self.__dead_or_alive(self.__dls_servbase_dataface, dead, alive)
-        await self.__dead_or_alive(self.__dataface, dead, alive)
         await self.__dead_or_alive(self.__collector, dead, alive)
-        await self.__dead_or_alive(self.__gui, dead, alive)
 
         return dead, alive
 
@@ -96,45 +87,6 @@ class Classic(Base):
 
             try:
                 specification = self.specification().get(
-                    "dls_servbase_dataface_specification"
-                )
-                if specification is not None:
-                    logger.debug(
-                        f"at entering position {callsign(self)} DLS_BILLY DATAFACE"
-                    )
-                    self.__dls_servbase_dataface = DlsServbaseDatafaceContext(
-                        specification
-                    )
-                    await self.__dls_servbase_dataface.aenter()
-                else:
-                    logger.debug(
-                        f"no specification in {callsign(self)} for DLS_BILLY DATAFACE"
-                    )
-            except Exception as exception:
-                raise RuntimeError(
-                    explain(
-                        exception,
-                        f"creating {callsign(self)} dls_servbase_dataface context",
-                    )
-                )
-
-            try:
-                specification = self.specification().get(
-                    "chimpflow_dataface_specification"
-                )
-                if specification is not None:
-                    logger.debug(
-                        f"at entering position {callsign(self)} CHIMPFLOW DATAFACE"
-                    )
-                    self.__dataface = DatafaceContext(specification)
-                    await self.__dataface.aenter()
-            except Exception as exception:
-                raise RuntimeError(
-                    explain(exception, f"creating {callsign(self)} dataface context")
-                )
-
-            try:
-                specification = self.specification().get(
                     "chimpflow_collector_specification"
                 )
                 if specification is not None:
@@ -144,17 +96,6 @@ class Classic(Base):
             except Exception as exception:
                 raise RuntimeError(
                     explain(exception, f"creating {callsign(self)} collector context")
-                )
-
-            try:
-                specification = self.specification().get("chimpflow_gui_specification")
-                if specification is not None:
-                    logger.debug(f"at entering position {callsign(self)} GUI")
-                    self.__gui = GuiContext(specification)
-                    await self.__gui.aenter()
-            except Exception as exception:
-                raise RuntimeError(
-                    explain(exception, f"creating {callsign(self)} gui context")
                 )
 
         except Exception as exception:
@@ -175,17 +116,6 @@ class Classic(Base):
 
         logger.debug(f"exiting {callsign(self)} context")
 
-        if self.__gui is not None:
-            logger.debug(f"at exiting position {callsign(self)} GUI")
-            try:
-                await self.__gui.aexit()
-            except Exception as exception:
-                logger.error(
-                    explain(exception, f"exiting {callsign(self.__gui)} context"),
-                    exc_info=exception,
-                )
-            self.__gui = None
-
         if self.__collector is not None:
             logger.debug(f"at exiting position {callsign(self)} COLLECTOR")
             try:
@@ -196,30 +126,5 @@ class Classic(Base):
                     exc_info=exception,
                 )
             self.__collector = None
-
-        if self.__dataface is not None:
-            logger.debug(f"at exiting position {callsign(self)} DATAFACE")
-            try:
-                await self.__dataface.aexit()
-            except Exception as exception:
-                logger.error(
-                    explain(exception, f"exiting {callsign(self.__dataface)} context"),
-                    exc_info=exception,
-                )
-            self.__dataface = None
-
-        if self.__dls_servbase_dataface is not None:
-            logger.debug(f"at exiting position {callsign(self)} DLS_BILLY DATAFACE")
-            try:
-                await self.__dls_servbase_dataface.aexit()
-            except Exception as exception:
-                logger.error(
-                    explain(
-                        exception,
-                        f"exiting {callsign(self.__dls_servbase_dataface)} context",
-                    ),
-                    exc_info=exception,
-                )
-            self.__datafa__dls_servbase_datafacece = None
 
         logger.debug(f"exited {callsign(self)} context")

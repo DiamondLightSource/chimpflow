@@ -3,11 +3,11 @@ import logging
 
 import yaml
 
-# Exceptions.
-from chimpflow_api.exceptions import NotFound
-
 # Class managing list of things.
-from chimpflow_api.things import Things
+from dls_utilpack.things import Things
+
+# Exceptions.
+from chimpflow_lib.exceptions import NotFound
 
 logger = logging.getLogger(__name__)
 

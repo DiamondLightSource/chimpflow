@@ -2,18 +2,18 @@
 import logging
 import os
 
-# Exceptions.
-from chimpflow_api.exceptions import NotFound
+# Utilities.
+from dls_utilpack.callsign import callsign
+from dls_utilpack.require import require
 
 # Class managing list of things.
-from chimpflow_api.things import Things
+from dls_utilpack.things import Things
 
 # Environment variables with some extra functionality.
 from chimpflow_lib.envvar import Envvar
 
-# Utilities.
-from dls_utilpack.callsign import callsign
-from dls_utilpack.require import require
+# Exceptions.
+from chimpflow_lib.exceptions import NotFound
 
 logger = logging.getLogger(__name__)
 

@@ -29,6 +29,6 @@ class ClientConnectorError(RuntimeError):
 
 class Factory:
     def build(qualname):
-        if qualname == "chimpflow_api.exceptions.CapacityReached":
+        if qualname == "echolocator_api.exceptions.CapacityReached":
             return CapacityReached
         return None
