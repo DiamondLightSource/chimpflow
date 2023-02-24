@@ -71,18 +71,3 @@ chimpflow_collector_specification:
                 directories:
                     - ${CWD}/example_images
                 recursive: True
-
-# The chimpflow_gui specification.
-chimpflow_gui_specification:
-    type: "chimpflow_lib.chimpflow_guis.aiohttp"
-    type_specific_tbd:
-        # The remote chimpflow_gui server access.
-        aiohttp_specification:
-            server: *CHIMPFLOW_GUI_SERVER
-            client: *CHIMPFLOW_GUI_CLIENT
-            cookie_specification:
-                type: "dls_servbase_lib.cookies.dataface"
-                type_specific_tbd:
-                    dataface_specification: *DLS_BILLY_DATAFACE_SPECIFICATION
-    # The dataface which the gui talks to.
-    chimpflow_dataface_specification: *CHIMPFLOW_DATAFACE_SPECIFICATION

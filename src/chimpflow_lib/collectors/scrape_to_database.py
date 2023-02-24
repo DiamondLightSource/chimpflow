@@ -11,7 +11,7 @@ from PIL import Image
 from xchembku_api.databases.constants import CrystalWellFieldnames, Tablenames
 
 # Global dataface.
-from xchembku_api.datafaces.datafaces import chimpflow_datafaces_get_default
+from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
 
 # Base class for collector instances.
 from chimpflow_lib.collectors.base import Base as CollectorBase
@@ -40,7 +40,7 @@ class ScrapeToDatabase(CollectorBase):
         self.__recursive = require(s, type_specific_tbd, "recursive")
 
         # We will use the dataface to discover previously processed files.
-        self.__dataface = chimpflow_datafaces_get_default()
+        self.__dataface = xchembku_datafaces_get_default()
 
         # This flag will stop the ticking async task.
         self.__keep_ticking = True

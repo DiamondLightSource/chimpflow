@@ -6,10 +6,8 @@ import os
 import pytest
 
 # Configurator.
-from chimpflow_lib.configurators.configurators import (
-    Configurators,
-    chimpflow_configurators_set_default,
-)
+from dls_multiconf_lib.constants import ThingTypes as MulticonfThingTypes
+from dls_multiconf_lib.multiconfs import Multiconfs, multiconfs_set_default
 
 logger = logging.getLogger(__name__)
 
@@ -52,27 +50,27 @@ class BaseContextTester:
             pytest.fail(failure_message)
 
     # ----------------------------------------------------------------------------------------
-    def get_configurator(self):
+    def get_multiconf(self):
 
-        chimpflow_configurator = Configurators().build_object(
+        chimpflow_multiconf = Multiconfs().build_object(
             {
-                "type": "chimpflow_lib.chimpflow_configurators.yaml",
+                "type": MulticonfThingTypes.YAML,
                 "type_specific_tbd": {"filename": self.__configuration_file},
             }
         )
 
         # For convenience, always do these replacement.
-        chimpflow_configurator.substitute({"output_directory": self.__output_directory})
+        chimpflow_multiconf.substitute({"output_directory": self.__output_directory})
 
-        # Add various things from the environment into the configurator.
-        chimpflow_configurator.substitute(
+        # Add various things from the environment into the multiconf.
+        chimpflow_multiconf.substitute(
             {
                 "CWD": os.getcwd(),
                 "PYTHONPATH": os.environ.get("PYTHONPATH", "PYTHONPATH"),
             }
         )
 
-        # Set the global value of our configurator which might be used in other modules.
-        chimpflow_configurators_set_default(chimpflow_configurator)
+        # Set the global value of our multiconf which might be used in other modules.
+        multiconfs_set_default(chimpflow_multiconf)
 
-        return chimpflow_configurator
+        return chimpflow_multiconf

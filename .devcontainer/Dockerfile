@@ -1,5 +1,5 @@
 # ********** Please don't edit this file!
-# ********** It has been generated automatically by dae_devops version 0.5.1.
+# ********** It has been generated automatically by dae_devops version 0.5.2.
 # ********** For repository_name chimpflow
 
 # This file is for use as a devcontainer and a runtime container
@@ -40,4 +40,4 @@ ENV PATH=/venv/bin:$PATH
 ENTRYPOINT ["chimpflow"]
 CMD ["--version"]
 
-# dae_devops_fingerprint 9f8293f6ca25bba8698a6eb0684ed4c3
+# dae_devops_fingerprint 5785b1775d09431a8a064cb67aa564cf

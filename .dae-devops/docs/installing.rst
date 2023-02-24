@@ -1,5 +1,5 @@
 .. # ********** Please don't edit this file!
-.. # ********** It has been generated automatically by dae_devops version 0.5.1.
+.. # ********** It has been generated automatically by dae_devops version 0.5.2.
 .. # ********** For repository_name chimpflow
 
 Installing
@@ -32,7 +32,7 @@ You can now use ``pip`` to install the library and its dependencies::
 If you require a feature that is not currently released you can also install
 from git::
 
-    $ python3 -m pip install git+https://gitlab.diamond.ac.uk/xchem/chimpflow.git
+    $ python3 -m pip install git+https://github.com/diamondlightsource/chimpflow/chimpflow.git
 
 The library should now be installed and the commandline interface on your path.
 You can check the version that has been installed by typing::
@@ -40,4 +40,4 @@ You can check the version that has been installed by typing::
     $ chimpflow --version
     $ chimpflow --version-json
 
-.. # dae_devops_fingerprint 750a8525d08c11186e57364340f0344d
+.. # dae_devops_fingerprint f4209c13d354b457d8cc21ddf076df26

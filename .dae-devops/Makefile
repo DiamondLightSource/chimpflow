@@ -1,5 +1,5 @@
 # ********** Please don't edit this file!
-# ********** It has been generated automatically by dae_devops version 0.5.1.
+# ********** It has been generated automatically by dae_devops version 0.5.2.
 # ********** For repository_name chimpflow
 
 # ---------------------------------------------------------------------
@@ -69,4 +69,4 @@ publish_docs:
 	cp -r build/html/* $(DOCS_PUBLISH_ROOT)
 	
 
-# dae_devops_fingerprint 49be27820cf0143b7417fa4f47ee6be9
+# dae_devops_fingerprint e7dd1051580ffa0ed1b6a5a9ce3e6290

@@ -2,14 +2,11 @@ import logging
 import os
 import tempfile
 
+# Configurator.
+from dls_multiconf_lib.multiconfs import Multiconfs, multiconfs_set_default
+
 # Utilities.
 from dls_utilpack.visit import get_visit_year
-
-# Configurator.
-from chimpflow_lib.configurators.configurators import (
-    Configurators,
-    chimpflow_configurators_set_default,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -25,15 +22,15 @@ class Base:
         self.__temporary_directory = None
 
     # ----------------------------------------------------------------------------------------
-    def get_configurator(self):
+    def get_multiconf(self):
 
-        chimpflow_configurator = Configurators().build_object_from_environment()
+        chimpflow_multiconf = Multiconfs().build_object_from_environment()
 
         # For convenience, make a temporary directory for this test.
         self.__temporary_directory = tempfile.TemporaryDirectory()
 
-        # Make the temporary directory available to the configurator.
-        chimpflow_configurator.substitute(
+        # Make the temporary directory available to the multiconf.
+        chimpflow_multiconf.substitute(
             {"temporary_directory": self.__temporary_directory.name}
         )
 
@@ -54,9 +51,9 @@ class Base:
             substitutions["VISIT"] = self._args.visit
             substitutions["YEAR"] = year
 
-        chimpflow_configurator.substitute(substitutions)
+        chimpflow_multiconf.substitute(substitutions)
 
-        # Set this as the default configurator so it is available everywhere.
-        chimpflow_configurators_set_default(chimpflow_configurator)
+        # Set this as the default multiconf so it is available everywhere.
+        multiconfs_set_default(chimpflow_multiconf)
 
-        return chimpflow_configurator
+        return chimpflow_multiconf

@@ -1,5 +1,5 @@
 .. # ********** Please don't edit this file!
-.. # ********** It has been generated automatically by dae_devops version 0.5.1.
+.. # ********** It has been generated automatically by dae_devops version 0.5.2.
 .. # ********** For repository_name chimpflow
 
 Developing
@@ -9,7 +9,7 @@ If you plan to make change to the code in this repository, you can use the steps
 
 Clone the repository::
 
-    $ git clone https://gitlab.diamond.ac.uk/xchem/chimpflow.git
+    $ git clone https://github.com/diamondlightsource/chimpflow/chimpflow.git
 
 It is recommended that you install into a virtual environment so this
 installation will not interfere with any existing Python software.
@@ -36,4 +36,4 @@ If you plan to modify the docs, you will need to::
     
 
 
-.. # dae_devops_fingerprint 09e796648e4863f0a8dba0e2b1211e23
+.. # dae_devops_fingerprint 2778ced07515a8064c66e3978215aae0

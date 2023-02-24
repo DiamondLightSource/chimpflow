@@ -1,5 +1,5 @@
 # ********** Please don't edit this file!
-# ********** It has been generated automatically by dae_devops version 0.5.1.
+# ********** It has been generated automatically by dae_devops version 0.5.2.
 # ********** For repository_name chimpflow
 
 name: Docs Cleanup CI
@@ -46,4 +46,4 @@ jobs:
           git commit -am "Removing redundant docs version $DOCS_VERSION"
           git push
 
-# dae_devops_fingerprint 5f76bf6ba723088368c15737dbf83401
+# dae_devops_fingerprint 9d06f858b84de2523c688330e687075b

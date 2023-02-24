@@ -1,7 +1,3 @@
-.. # ********** Please don't edit this file!
-.. # ********** It has been generated automatically by dae_devops version 0.5.2.
-.. # ********** For repository_name chimpflow
-
 About the documentation
 -----------------------
 
@@ -20,5 +16,3 @@ approaches to their creation. Understanding the implications of this will help
 improve most documentation - often immensely.
 
 `More information on this topic. <https://documentation.divio.com>`_
-
-.. # dae_devops_fingerprint b2ecceb2057aa129a1ee55c76c58e867

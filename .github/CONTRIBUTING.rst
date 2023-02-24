@@ -1,5 +1,5 @@
 .. # ********** Please don't edit this file!
-.. # ********** It has been generated automatically by dae_devops version 0.5.1.
+.. # ********** It has been generated automatically by dae_devops version 0.5.2.
 .. # ********** For repository_name chimpflow
 
 Contributing to the project
@@ -38,4 +38,4 @@ should follow.
 
 .. _Developer Guide: https://diamondlightsource.github.io/chimpflow/main/developer/how-to/contribute.html
 
-.. # dae_devops_fingerprint 57604fa96da01345ec1bc8821f614d89
+.. # dae_devops_fingerprint 303160a2b536f20a8c1a1ec134e82f71

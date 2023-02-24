@@ -1,5 +1,5 @@
 .. # ********** Please don't edit this file!
-.. # ********** It has been generated automatically by dae_devops version 0.5.1.
+.. # ********** It has been generated automatically by dae_devops version 0.5.2.
 .. # ********** For repository_name chimpflow
 
 Devops
@@ -43,4 +43,4 @@ Publishing::
     
 
 
-.. # dae_devops_fingerprint cc5ad26c434724f53a8b98928fb3277e
+.. # dae_devops_fingerprint d1782f75b785c0194b6666f894b338a6

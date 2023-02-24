@@ -3,25 +3,17 @@ import asyncio
 # Use standard logging in this module.
 import logging
 
-from dls_utilpack.callsign import callsign
-
 # Base class for cli subcommands.
 from chimpflow_cli.subcommands.base import Base
 
 # Context creator.
 from chimpflow_lib.contexts.contexts import Contexts
 
-# Special reference to the gui so we give the url to the user on the info.
-from chimpflow_lib.guis.guis import chimpflow_guis_get_default
-
 logger = logging.getLogger()
 
 # Specifications of services we can start, and their short names for parse args.
 services = {
-    "dls_servbase_dataface_specification": "dls_servbase_dataface",
-    "chimpflow_dataface_specification": "dataface",
     "chimpflow_collector_specification": "collector",
-    "chimpflow_gui_specification": "gui",
 }
 
 
@@ -48,12 +40,12 @@ class StartServices(Base):
         """"""
 
         # Load the configuration.
-        chimpflow_configurator = self.get_configurator()
+        chimpflow_multiconf = self.get_multiconf()
 
-        # Let the configurator know about any mpqueue logging.
-        # chimpflow_configurator.set_logging_mpqueue(self.__mainiac.mpqueue)
+        # Let the multiconf know about any mpqueue logging.
+        # chimpflow_multiconf.set_logging_mpqueue(self.__mainiac.mpqueue)
 
-        context_configuration = await chimpflow_configurator.load()
+        context_configuration = await chimpflow_multiconf.load()
 
         if "all" in self._args.service_names:
             selected_service_names = []
@@ -74,10 +66,6 @@ class StartServices(Base):
 
         # Open the context (servers and clients).
         async with context:
-            if "gui" in selected_service_names:
-                logger.info(
-                    f"starting gui {callsign(chimpflow_guis_get_default())}/index.html"
-                )
 
             try:
                 # Stay up until all processes are dead.

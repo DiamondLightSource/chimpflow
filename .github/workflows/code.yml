@@ -1,5 +1,5 @@
 # ********** Please don't edit this file!
-# ********** It has been generated automatically by dae_devops version 0.5.1.
+# ********** It has been generated automatically by dae_devops version 0.5.2.
 # ********** For repository_name chimpflow
 
 name: Code CI
@@ -212,4 +212,4 @@ jobs:
         with:
           password: ${{ secrets.PYPI_TOKEN }}
 
-# dae_devops_fingerprint e6d4d68441f77a86d3641354d13e32b6
+# dae_devops_fingerprint 618b4ddc2d21af6824e6444a1c40caa7

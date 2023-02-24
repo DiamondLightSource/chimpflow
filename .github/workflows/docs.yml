@@ -1,5 +1,5 @@
 # ********** Please don't edit this file!
-# ********** It has been generated automatically by dae_devops version 0.5.1.
+# ********** It has been generated automatically by dae_devops version 0.5.2.
 # ********** For repository_name chimpflow
 
 name: Docs CI
@@ -56,4 +56,4 @@ jobs:
           publish_dir: .github/pages
           keep_files: true
 
-# dae_devops_fingerprint 10d1faa094000b5b65992449d9ad12ee
+# dae_devops_fingerprint a146e4a2bb02a7386ed24898b5d29200

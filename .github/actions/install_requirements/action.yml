@@ -1,5 +1,5 @@
 # ********** Please don't edit this file!
-# ********** It has been generated automatically by dae_devops version 0.5.1.
+# ********** It has been generated automatically by dae_devops version 0.5.2.
 # ********** For repository_name chimpflow
 
 name: Install requirements
@@ -61,4 +61,4 @@ runs:
       shell: bash
 
 
-# dae_devops_fingerprint 87bf01d2d9d057ec4794d75514f69177
+# dae_devops_fingerprint e7e586c2794a8c6979edef0f62c7ba89

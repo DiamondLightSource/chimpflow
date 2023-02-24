@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------------------------
 class TestTutorial:
-    def test_dataface_laptop(self, constants, logging_setup, output_directory):
+    def test_dataface_multiconf(self, constants, logging_setup, output_directory):
         """ """
 
-        configuration_file = "tests/configurations/laptop.yaml"
+        configuration_file = "tests/configurations/multiconf.yaml"
         TutorialTester().main(constants, configuration_file, output_directory)
 
 
@@ -64,8 +64,8 @@ class TutorialTester(BaseContextTester):
             )
 
             # Get the testing configuration.
-            chimpflow_configurator = self.get_configurator()
-            context_configuration = await chimpflow_configurator.load()
+            chimpflow_multiconf = self.get_multiconf()
+            context_configuration = await chimpflow_multiconf.load()
 
             # Establish a context in which the chimpflow service is running.
             chimpflow_context = Contexts().build_object(context_configuration)

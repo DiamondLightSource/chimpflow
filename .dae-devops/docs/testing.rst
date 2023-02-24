@@ -1,5 +1,5 @@
 .. # ********** Please don't edit this file!
-.. # ********** It has been generated automatically by dae_devops version 0.5.1.
+.. # ********** It has been generated automatically by dae_devops version 0.5.2.
 .. # ********** For repository_name chimpflow
 
 Testing
@@ -35,4 +35,4 @@ This allows peeking in there to see what's been written by the test.
     
 
 
-.. # dae_devops_fingerprint ba59729601da92ed538e0fc9965f5a0e
+.. # dae_devops_fingerprint 3787294ef4eef4f87161e07806f1f417

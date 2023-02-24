@@ -1,5 +1,5 @@
 # ********** Please don't edit this file!
-# ********** It has been generated automatically by dae_devops version 0.5.1.
+# ********** It has been generated automatically by dae_devops version 0.5.2.
 # ********** For repository_name chimpflow
 
 from pathlib import Path
@@ -150,7 +150,7 @@ html_theme_options = dict(
     logo=dict(
         text=project,
     ),
-    gitlab_url="https://gitlab.diamond.ac.uk/xchem/chimpflow",
+    gitlab_url="https://github.com/diamondlightsource/chimpflow/chimpflow",
     icon_links=[],
     navbar_end=["theme-switcher", "icon-links"],
 )
@@ -187,7 +187,7 @@ def ultimateReplace(app, docname, source):
 ultimate_replacements = {
     "$" + "{repository_name}": "chimpflow",
     "$" + "{package_name}": "chimpflow_lib",
-    "$" + "{git_url}": "https://gitlab.diamond.ac.uk/xchem",
+    "$" + "{git_url}": "https://github.com/diamondlightsource/chimpflow",
     "$" + "{python_version_at_least}": "3.9",
 }
 
@@ -197,4 +197,4 @@ def setup(app):
     app.connect("source-read", ultimateReplace)
 
 
-# dae_devops_fingerprint f9eef029468bf34a873b048b9ddbbc8d
+# dae_devops_fingerprint b80ddf31fa2e6cb77cfd3f049739c5c3
