@@ -1,0 +1,14 @@
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - imageio
+  - matplotlib
+  - scikit-image
+  - pip
+  - pytorch
+  - torchvision
+  - yaml
+  - pip:
+      - albumentations

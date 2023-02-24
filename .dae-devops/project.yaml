@@ -1,0 +1,21 @@
+# Primary information needed for devops.
+primary:
+    repository_name: chimpflow
+    package_name: chimpflow_lib
+    one_line_description: "XChem service to apply CHIMP detection for discovery of well center, crystal locatins and suggested drop target."
+    author:
+        name: David Erb
+        email: david.erb@diamond.ac.uk
+    project_urls:
+        GitLab: https://github.com/diamondlightsource/chimpflow
+    project_scripts:
+        chimpflow: "chimpflow_lib.__main__:main"
+        chimpflow.cli: "chimpflow_cli.main:main"
+    dependencies:
+        - type: pypi
+          list:
+              - xchembku
+              - dls_servbase
+              - dls_mainiac
+              - dls_multiconf
+              - dls_utilpack
