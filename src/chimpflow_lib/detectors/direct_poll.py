@@ -8,14 +8,15 @@ from typing import Dict, List
 from dls_utilpack.callsign import callsign
 from dls_utilpack.explain import explain2
 from dls_utilpack.require import require
-from PIL import Image
-
-# Base class for detector instances.
-from chimpflow_lib.detectors.base import Base as DetectorBase
-from xchembku_api.databases.constants import CrystalWellFieldnames
 
 # Global dataface.
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
+
+# Detector adapter to chimp package.
+from chimpflow_lib.detector_adapter import DetectorAdapter
+
+# Base class for detector instances.
+from chimpflow_lib.detectors.base import Base as DetectorBase
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +27,9 @@ thing_type = "chimpflow_lib.detectors.direct_poll"
 class DirectPoll(DetectorBase):
     """
     Object representing an image detector.
-    The behavior is to start a coro task to waken every few seconds and scan for incoming files.
-    Files are pushed to xchembku.
+    The behavior is to start a coro task to waken every few seconds and query xchembku for eligible images.
+    The images are processed using the chimpflow.Detector class.  (This is an adapter to the chimp package.)
+    Results are pushed to xchembku.
     """
 
     # ----------------------------------------------------------------------------------------
@@ -36,46 +38,35 @@ class DirectPoll(DetectorBase):
             self, thing_type, specification, predefined_uuid=predefined_uuid
         )
 
-        s = f"{callsign(self)} specification", self.specification()
+        # The specification, s for short.
+        s = f"{callsign(self)} specification"
 
-        type_specific_tbd = require(s, self.specification(), "type_specific_tbd")
-        self.__directories = require(s, type_specific_tbd, "directories")
-        self.__recursive = require(s, type_specific_tbd, "recursive")
+        # The type-specific part, t for short.
+        t = require(s, self.specification(), "type_specific_tbd")
 
-        # We will use the dataface to discover previously processed files.
-        # We will also discovery newly find files into this database.
+        # The detector adapter configuration.
+        detector_adapter_specification = require(
+            f"{s} type_specific_tbd", t, "detector_adapter"
+        )
+
+        # We will use the dataface to query for un-chimped images and update the results.
         self.__xchembku = xchembku_datafaces_get_default()
 
         # This flag will stop the ticking async task.
         self.__keep_ticking = True
         self.__tick_future = None
 
-        self.__known_filenames = []
+        # Make a reusable detector adapter.
+        self.__detector_adapter = DetectorAdapter(detector_adapter_specification)
 
     # ----------------------------------------------------------------------------------------
     async def activate(self) -> None:
         """
         Activate the object.
 
-        This implementation gets the list of filenames already known to the xchembku.
-
-        Then it starts the coro task to awaken every few seconds to scrape the directories.
+        This implementation just starts the coro task to awaken every few seconds
+        and query xchembku and do detection on what it is given.
         """
-
-        # Get all the jobs ever done.
-        # TODO: Avoid needing to fetch all chimpflow records and matching to all disk files.
-        records = await self.__xchembku.fetch_crystal_wells_filenames(
-            why="chimpflow activate getting all crystal wells ever done"
-        )
-
-        # Make an initial list of the data labels associated with any job.
-        self.__known_filenames = []
-        for record in records:
-            filename = record["filename"]
-            if filename not in self.__known_filenames:
-                self.__known_filenames.append(filename)
-
-        logger.debug(f"activating with {len(records)} known filenames")
 
         # Poll periodically.
         self.__tick_future = asyncio.get_event_loop().create_task(self.tick())
@@ -105,7 +96,7 @@ class DirectPoll(DetectorBase):
     # ----------------------------------------------------------------------------------------
     async def tick(self) -> None:
         """
-        A coro task which does periodic checking for new files in the directories.
+        A coro task which does periodic checking for new eligible images from xchembku.
 
         Stops when flag has been set by other tasks.
 
@@ -114,113 +105,35 @@ class DirectPoll(DetectorBase):
 
         while self.__keep_ticking:
             try:
-                await self.scrape()
+                await self.query_and_detect()
             except Exception as exception:
-                logger.error(explain2(exception, "scraping"), exc_info=exception)
+                logger.error(
+                    explain2(exception, "query_and_detect"), exc_info=exception
+                )
 
             # TODO: Make periodic tick period to be configurable.
             await asyncio.sleep(1.0)
 
     # ----------------------------------------------------------------------------------------
-    async def scrape(self) -> None:
+    async def query_and_detect(self) -> None:
         """
-        Scrape all the configured directories looking for new files.
-        """
-
-        collection: List[Dict] = []
-
-        # TODO: Use asyncio tasks to parellize scraping directories.
-        for directory in self.__directories:
-            await self.scrape_directory(directory, collection)
-
-        # Flush any remaining collection to the database.
-        await self.flush_collection(collection)
-
-    # ----------------------------------------------------------------------------------------
-    async def scrape_directory(
-        self,
-        directory: str,
-        collection: List[Dict],
-    ) -> None:
-        """
-        Scrape a single directory looking for new files.
-
-        Adds discovered files to internal list which gets pushed when it reaches a configurable size.
-
-        Also add discovered files to internal list of known files to avoid duplicate pushing.
+        Query for work from xchembku and do the detection processing immediately.
         """
 
-        if not os.path.isdir(directory):
+        # Get eligible wells from xchembku.
+        wells: List[Dict] = await self.__xchembku.query_crystal_wells_for_chimpflow()
+
+        if len(wells) == 0:
             return
 
-        t0 = time.time()
-        filenames = glob.glob(f"{directory}/**", recursive=self.__recursive)
-        t1 = time.time()
+        results = []
+        for well in wells:
+            # Do the detection.
+            result = self.__detector_adapter.detect(well)
+            results.append(result)
 
-        new_count = 0
-        for filename in filenames:
-            if os.path.isdir(filename):
-                continue
-
-            if filename not in self.__known_filenames:
-                # Add image to list of collection.
-                await self.add_discovery(filename, collection)
-                self.__known_filenames.append(filename)
-                new_count = new_count + 1
-
-        if new_count >= 0:
-            seconds = "%0.3f" % (t1 - t0)
-            logger.info(
-                f"from {directory} found {new_count} newly actionable files"
-                f" among {len(filenames)} total files in {seconds} seconds"
-            )
-
-    # ----------------------------------------------------------------------------------------
-    async def add_discovery(
-        self,
-        filename: str,
-        collection: List[Dict],
-    ) -> None:
-        """
-        Add new discovery for later flush.
-        """
-
-        if len(collection) >= 1000:
-            await self.flush_collection(collection)
-
-        error = None
-        try:
-            image = Image.open(filename)
-            width, height = image.size
-        except Exception as exception:
-            error = str(exception)
-            width = None
-            height = None
-
-        # Add a new discovery to the collection.
-        collection.append(
-            {
-                CrystalWellFieldnames.FILENAME: filename,
-                CrystalWellFieldnames.ERROR: error,
-                CrystalWellFieldnames.WIDTH: width,
-                CrystalWellFieldnames.HEIGHT: height,
-            }
-        )
-
-    # ----------------------------------------------------------------------------------------
-    async def flush_collection(self, collection: List[Dict]) -> None:
-        """
-        Send the discovered files to xchembku for storage.
-        """
-
-        if len(collection) == 0:
-            return
-
-        logger.debug(f"flushing {len(collection)} collection")
-
-        await self.__xchembku.originate_crystal_wells(collection)
-
-        collection.clear()
+        # Send the detection results to xchembku for storage.
+        await self.__xchembku.originate_crystal_well_detections(results)
 
     # ----------------------------------------------------------------------------------------
     async def close_client_session(self):
