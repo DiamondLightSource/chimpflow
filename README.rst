@@ -1,7 +1,7 @@
 chimpflow
 =======================================================================
 
-Orchestrating chimp crystal detection triggered by incoming images.
+XChem Business Knowledge Unit.  Service, Client, API, persistent store.
 
 Installation
 -----------------------------------------------------------------------

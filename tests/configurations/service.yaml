@@ -38,7 +38,7 @@ chimpflow_detector_specification:
         # The local implementation of the chimpflow.
         direct_detector_specification: *CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
     context:
-        start_as: process
+        start_as: coro
 
 # The xchembku_dataface direct access.
 xchembku_dataface_specification:

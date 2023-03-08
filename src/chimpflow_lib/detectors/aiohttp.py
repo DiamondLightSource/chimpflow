@@ -12,21 +12,25 @@ from dls_utilpack.thing import Thing
 # Base class for an aiohttp server.
 from chimpflow_lib.base_aiohttp import BaseAiohttp
 
-# Factory to make a Collector.
-from chimpflow_lib.collectors.collectors import Collectors
+# Detector protocolj things.
+from chimpflow_lib.detectors.constants import Commands, Keywords
 
-# Collector protocolj things.
-from chimpflow_lib.collectors.constants import Commands, Keywords
+# Factory to make a Detector.
+from chimpflow_lib.detectors.detectors import Detectors
 
 logger = logging.getLogger(__name__)
 
-thing_type = "chimpflow_lib.collectors.aiohttp"
+thing_type = "chimpflow_lib.detectors.aiohttp"
 
 
 # ------------------------------------------------------------------------------------------
 class Aiohttp(Thing, BaseAiohttp):
     """
-    Object representing a collector which receives tasks from aiohttp.
+    Object representing an image detector.
+    The behavior is to start a direct detector coro task or process
+    to waken every few seconds and scan for incoming files.
+
+    Then start up a web server to handle generic commands and queries.
     """
 
     # ----------------------------------------------------------------------------------------
@@ -36,33 +40,47 @@ class Aiohttp(Thing, BaseAiohttp):
             self, specification["type_specific_tbd"]["aiohttp_specification"]
         )
 
-        self.__actual_collector = None
+        self.__direct_detector = None
 
     # ----------------------------------------------------------------------------------------
-    def callsign(self):
-        """"""
-        return "%s %s" % ("Collector.Aiohttp", BaseAiohttp.callsign(self))
+    def callsign(self) -> str:
+        """
+        Put the class name into the base class's call sign.
+
+        Returns:
+            str: call sign withi class name in it
+        """
+
+        return "%s %s" % ("Detector.Aiohttp", BaseAiohttp.callsign(self))
 
     # ----------------------------------------------------------------------------------------
-    def activate_process(self):
-        """"""
+    def activate_process(self) -> None:
+        """
+        Activate the direct detector and web server in a new process.
+
+        Meant to be called from inside a newly started process.
+        """
 
         try:
-            multiprocessing.current_process().name = "collector"
+            multiprocessing.current_process().name = "detector"
 
             self.activate_process_base()
 
         except Exception as exception:
-            logger.exception("exception in collector process", exc_info=exception)
+            logger.exception("exception in detector process", exc_info=exception)
+
+        logger.debug(f"[PIDAL] {callsign(self)} is returning from activate_process")
 
     # ----------------------------------------------------------------------------------------
-    def activate_thread(self, loop):
+    def activate_thread(self, loop) -> None:
         """
-        Called from inside a newly created thread.
+        Activate the direct detector and web server in a new thread.
+
+        Meant to be called from inside a newly created thread.
         """
 
         try:
-            threading.current_thread().name = "collector"
+            threading.current_thread().name = "detector"
 
             self.activate_thread_base(loop)
 
@@ -72,75 +90,56 @@ class Aiohttp(Thing, BaseAiohttp):
             )
 
     # ----------------------------------------------------------------------------------------
-    async def activate_coro(self):
-        """"""
+    async def activate_coro(self) -> None:
+        """
+        Activate the direct detector and web server in a two asyncio tasks.
+        """
+
         try:
-            # Build a local collector for our back-end.
-            self.__actual_collector = Collectors().build_object(
+            # Build a local detector for our back-end.
+            self.__direct_detector = Detectors().build_object(
                 self.specification()["type_specific_tbd"][
-                    "actual_collector_specification"
+                    "direct_detector_specification"
                 ]
             )
 
+            logger.info("[COLSHUT] calling self.__direct_detector.activate()")
             # Get the local implementation started.
-            await self.__actual_collector.activate()
+            await self.__direct_detector.activate()
 
             # ----------------------------------------------
+            logger.info("[COLSHUT] calling BaseAiohttp.activate_coro_base(self)")
             await BaseAiohttp.activate_coro_base(self)
+
+            logger.info("[COLSHUT] returning")
 
         except Exception as exception:
             raise RuntimeError(
-                "exception while starting collector server"
+                "exception while starting detector server"
             ) from exception
 
     # ----------------------------------------------------------------------------------------
-    async def direct_shutdown(self):
-        """"""
+    async def direct_shutdown(self) -> None:
+        """
+        Shut down any started sub-process or coro tasks.
+
+        Then call the base_direct_shutdown to shut down the webserver.
+
+        """
+        logger.info(
+            f"[COLSHUT] in direct_shutdown self.__direct_detector is {self.__direct_detector}"
+        )
 
         # ----------------------------------------------
-        if self.__actual_collector is not None:
+        if self.__direct_detector is not None:
             # Disconnect our local dataface connection, i.e. the one which holds the database connection.
-            await self.__actual_collector.deactivate()
+            logger.info("[COLSHUT] awaiting self.__direct_detector.deactivate()")
+            await self.__direct_detector.deactivate()
+            logger.info("[COLSHUT] got return from self.__direct_detector.deactivate()")
 
         # ----------------------------------------------
         # Let the base class stop the server listener.
         await self.base_direct_shutdown()
-
-    # ----------------------------------------------------------------------------------------
-    # From http client, request server to submit task for execution.
-
-    # async def fire(self, message):
-    #     """"""
-    #     # Build a local collector for our client side.
-    #     actual_collector = Collectors().build_object(
-    #         self.specification()["type_specific_tbd"][
-    #             "actual_collector_specification"
-    #         ]
-    #     )
-
-    #     logger.debug(f"[DMOTF] firing actual {callsign(actual_collector)}")
-    #     await actual_collector.fire(message)
-    #     logger.debug("[DMOTF] firing complete")
-
-    # ----------------------------------------------------------------------------------------
-    async def fire(self, message):
-        """"""
-        return await self.__send_protocolj("fire", message)
-
-    # ----------------------------------------------------------------------------------------
-    async def __send_protocolj(self, function, *args, **kwargs):
-        """"""
-
-        return await self.client_protocolj(
-            {
-                Keywords.COMMAND: Commands.EXECUTE,
-                Keywords.PAYLOAD: {
-                    "function": function,
-                    "args": args,
-                    "kwargs": kwargs,
-                },
-            },
-        )
 
     # ----------------------------------------------------------------------------------------
     async def __do_locally(self, function, args, kwargs):
@@ -150,7 +149,7 @@ class Aiohttp(Thing, BaseAiohttp):
         # logger.info(describe("args", args))
         # logger.info(describe("kwargs", kwargs))
 
-        function = getattr(self.__actual_collector, function)
+        function = getattr(self.__direct_detector, function)
 
         response = await function(*args, **kwargs)
 
