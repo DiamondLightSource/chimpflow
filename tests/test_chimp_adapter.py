@@ -4,6 +4,10 @@ import logging
 import os
 import warnings
 
+from dls_utilpack.describe import describe
+from xchembku_api.models.well_geometry_model import WellGeometryModel
+from xchembku_api.models.well_model import WellModel
+
 # Base class for the tester.
 from tests.base import Base
 
@@ -45,9 +49,11 @@ class ChimpAdapterTester(Base):
         }
         chimp_adapter = ChimpAdapter(specification)
 
-        well = {
-            "filename": "tests/echo_test_imgs/echo_test_im_1.jpg",
-            "output_directory": output_directory,
-        }
+        well_model = WellModel(filename="tests/echo_test_imgs/echo_test_im_3.jpg")
 
-        await chimp_adapter.process(well)
+        well_model_geometry: WellGeometryModel = await chimp_adapter.process(well_model)
+
+        logger.debug(describe("well_model_geometry", well_model_geometry))
+
+        assert well_model_geometry.well_centroid_x == 504
+        assert well_model_geometry.well_centroid_y == 608
