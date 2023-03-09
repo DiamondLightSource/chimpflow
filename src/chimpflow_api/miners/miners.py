@@ -2,7 +2,7 @@
 import logging
 
 # Types.
-from chimpflow_api.detectors.constants import Types
+from chimpflow_api.miners.constants import Types
 
 # Exceptions.
 from chimpflow_api.exceptions import NotFound
@@ -13,27 +13,27 @@ from chimpflow_api.things import Things
 logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------------------------------
-__default_chimpflow_detector = None
+__default_chimpflow_miner = None
 
 
-def chimpflow_detectors_set_default(chimpflow_detector):
-    global __default_chimpflow_detector
-    __default_chimpflow_detector = chimpflow_detector
+def chimpflow_miners_set_default(chimpflow_miner):
+    global __default_chimpflow_miner
+    __default_chimpflow_miner = chimpflow_miner
 
 
-def chimpflow_detectors_get_default():
-    global __default_chimpflow_detector
-    if __default_chimpflow_detector is None:
-        raise RuntimeError("chimpflow_detectors_get_default instance is None")
-    return __default_chimpflow_detector
+def chimpflow_miners_get_default():
+    global __default_chimpflow_miner
+    if __default_chimpflow_miner is None:
+        raise RuntimeError("chimpflow_miners_get_default instance is None")
+    return __default_chimpflow_miner
 
 
 # -----------------------------------------------------------------------------------------
 
 
-class Detectors(Things):
+class Miners(Things):
     """
-    List of available chimpflow_detectors.
+    List of available chimpflow_miners.
     """
 
     # ----------------------------------------------------------------------------------------
@@ -44,30 +44,30 @@ class Detectors(Things):
     def build_object(self, specification):
         """"""
 
-        chimpflow_detector_class = self.lookup_class(specification["type"])
+        chimpflow_miner_class = self.lookup_class(specification["type"])
 
         try:
-            chimpflow_detector_object = chimpflow_detector_class(specification)
+            chimpflow_miner_object = chimpflow_miner_class(specification)
         except Exception as exception:
             raise RuntimeError(
-                "unable to build chimpflow detector object for type %s"
-                % (chimpflow_detector_class)
+                "unable to build chimpflow miner object for type %s"
+                % (chimpflow_miner_class)
             ) from exception
 
-        return chimpflow_detector_object
+        return chimpflow_miner_object
 
     # ----------------------------------------------------------------------------------------
     def lookup_class(self, class_type):
         """"""
 
         if class_type == Types.AIOHTTP:
-            from chimpflow_api.detectors.aiohttp import Aiohttp
+            from chimpflow_api.miners.aiohttp import Aiohttp
 
             return Aiohttp
 
         if class_type == Types.DIRECT:
-            from chimpflow_lib.detectors.direct_poll import DirectPoll
+            from chimpflow_lib.miners.direct_poll import DirectPoll
 
             return DirectPoll
 
-        raise NotFound(f"unable to get chimpflow detector class for type {class_type}")
+        raise NotFound(f"unable to get chimpflow miner class for type {class_type}")

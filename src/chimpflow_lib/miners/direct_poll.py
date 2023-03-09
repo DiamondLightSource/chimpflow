@@ -1,8 +1,5 @@
 import asyncio
-import glob
 import logging
-import os
-import time
 from typing import Dict, List
 
 from dls_utilpack.callsign import callsign
@@ -12,29 +9,29 @@ from dls_utilpack.require import require
 # Global dataface.
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
 
-# Detector adapter to chimp package.
-from chimpflow_lib.detector_adapter import DetectorAdapter
+# Miner adapter to chimp package.
+from chimpflow_lib.chimp_adapter import ChimpAdapter
 
-# Base class for detector instances.
-from chimpflow_lib.detectors.base import Base as DetectorBase
+# Base class for miner instances.
+from chimpflow_lib.miners.base import Base as MinerBase
 
 logger = logging.getLogger(__name__)
 
-thing_type = "chimpflow_lib.detectors.direct_poll"
+thing_type = "chimpflow_lib.miners.direct_poll"
 
 
 # ------------------------------------------------------------------------------------------
-class DirectPoll(DetectorBase):
+class DirectPoll(MinerBase):
     """
-    Object representing an image detector.
+    Object representing an image miner.
     The behavior is to start a coro task to waken every few seconds and query xchembku for eligible images.
-    The images are processed using the chimpflow.Detector class.  (This is an adapter to the chimp package.)
+    The images are processed using the chimpflow.Miner class.  (This is an adapter to the chimp package.)
     Results are pushed to xchembku.
     """
 
     # ----------------------------------------------------------------------------------------
     def __init__(self, specification, predefined_uuid=None):
-        DetectorBase.__init__(
+        MinerBase.__init__(
             self, thing_type, specification, predefined_uuid=predefined_uuid
         )
 
@@ -44,9 +41,9 @@ class DirectPoll(DetectorBase):
         # The type-specific part, t for short.
         t = require(s, self.specification(), "type_specific_tbd")
 
-        # The detector adapter configuration.
-        detector_adapter_specification = require(
-            f"{s} type_specific_tbd", t, "detector_adapter"
+        # The chimp adapter configuration.
+        chimp_adapter_specification = require(
+            f"{s} type_specific_tbd", t, "chimp_adapter"
         )
 
         # We will use the dataface to query for un-chimped images and update the results.
@@ -56,8 +53,8 @@ class DirectPoll(DetectorBase):
         self.__keep_ticking = True
         self.__tick_future = None
 
-        # Make a reusable detector adapter.
-        self.__detector_adapter = DetectorAdapter(detector_adapter_specification)
+        # Make a reusable chimp adapter.
+        self.__chimp_adapter = ChimpAdapter(chimp_adapter_specification)
 
     # ----------------------------------------------------------------------------------------
     async def activate(self) -> None:
@@ -65,7 +62,7 @@ class DirectPoll(DetectorBase):
         Activate the object.
 
         This implementation just starts the coro task to awaken every few seconds
-        and query xchembku and do detection on what it is given.
+        and query xchembku and do chimp crystal processing on what it is given.
         """
 
         # Poll periodically.
@@ -105,19 +102,17 @@ class DirectPoll(DetectorBase):
 
         while self.__keep_ticking:
             try:
-                await self.query_and_detect()
+                await self.query_and_chimp()
             except Exception as exception:
-                logger.error(
-                    explain2(exception, "query_and_detect"), exc_info=exception
-                )
+                logger.error(explain2(exception, "query_and_chimp"), exc_info=exception)
 
             # TODO: Make periodic tick period to be configurable.
             await asyncio.sleep(1.0)
 
     # ----------------------------------------------------------------------------------------
-    async def query_and_detect(self) -> None:
+    async def query_and_chimp(self) -> None:
         """
-        Query for work from xchembku and do the detection processing immediately.
+        Query for work from xchembku and do the chimp processing immediately.
         """
 
         # Get eligible wells from xchembku.
@@ -128,12 +123,12 @@ class DirectPoll(DetectorBase):
 
         results = []
         for well in wells:
-            # Do the detection.
-            result = self.__detector_adapter.detect(well)
+            # Do the chimp processing.
+            result = self.__chimp_adapter.process(well)
             results.append(result)
 
-        # Send the detection results to xchembku for storage.
-        await self.__xchembku.originate_crystal_well_detections(results)
+        # Send the chimp results to xchembku for storage.
+        await self.__xchembku.originate_crystal_well_locations(results)
 
     # ----------------------------------------------------------------------------------------
     async def close_client_session(self):

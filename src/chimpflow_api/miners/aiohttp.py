@@ -4,7 +4,7 @@ import logging
 from chimpflow_api.aiohttp_client import AiohttpClient
 
 # Dataface protocolj things.
-from chimpflow_api.detectors.constants import Commands, Keywords
+from chimpflow_api.miners.constants import Commands, Keywords
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------------------------------
 class Aiohttp:
     """
-    Object implementing client side API for talking to the chimpflow_detector server.
+    Object implementing client side API for talking to the chimpflow_miner server.
     Please see doctopic [A01].
     """
 

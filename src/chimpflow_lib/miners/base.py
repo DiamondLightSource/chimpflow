@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------------------------------
 class Base(Thing):
     """
-    Object representing a detector which receives triggers from aiohttp.
+    Object representing a miner which receives triggers from aiohttp.
     """
 
     # ----------------------------------------------------------------------------------------

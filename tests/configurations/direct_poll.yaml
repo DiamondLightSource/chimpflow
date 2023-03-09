@@ -1,8 +1,8 @@
 type: dls_multiconf.classic
 
 # The chimpflow direct access.
-chimpflow_detector_specification:
-    type: "chimpflow_lib.detectors.direct_poll"
+chimpflow_miner_specification:
+    type: "chimpflow_lib.miners.direct_poll"
     type_specific_tbd:
         directories:
             - "${output_directory}/images"

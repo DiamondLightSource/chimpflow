@@ -4,7 +4,7 @@ import os
 import time
 
 # Context creator.
-from chimpflow_lib.detectors.context import Context as DetectorContext
+from chimpflow_lib.miners.context import Context as MinerContext
 
 # Things xchembku provides.
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 # ----------------------------------------------------------------------------------------
-class TestDetectorDirectPoll:
+class TestMinerDirectPoll:
     """
-    Test detector interface by direct call.
+    Test miner interface by direct call.
     """
 
     def test(self, constants, logging_setup, output_directory):
@@ -27,13 +27,13 @@ class TestDetectorDirectPoll:
         # Configuration file to use.
         configuration_file = "tests/configurations/direct_poll.yaml"
 
-        DetectorTester().main(constants, configuration_file, output_directory)
+        MinerTester().main(constants, configuration_file, output_directory)
 
 
 # ----------------------------------------------------------------------------------------
-class TestDetectorService:
+class TestMinerService:
     """
-    Test detector interface through network interface.
+    Test miner interface through network interface.
     """
 
     def test(self, constants, logging_setup, output_directory):
@@ -41,13 +41,13 @@ class TestDetectorService:
         # Configuration file to use.
         configuration_file = "tests/configurations/service.yaml"
 
-        DetectorTester().main(constants, configuration_file, output_directory)
+        MinerTester().main(constants, configuration_file, output_directory)
 
 
 # ----------------------------------------------------------------------------------------
-class DetectorTester(Base):
+class MinerTester(Base):
     """
-    Test scraper detector's ability to automatically discover files and push them to xchembku.
+    Test scraper miner's ability to automatically discover files and push them to xchembku.
     """
 
     # ----------------------------------------------------------------------------------------
@@ -74,15 +74,15 @@ class DetectorTester(Base):
             images_directory = f"{output_directory}/images"
             os.makedirs(images_directory)
 
-            chimpflow_context = DetectorContext(
-                multiconf_dict["chimpflow_detector_specification"]
+            chimpflow_context = MinerContext(
+                multiconf_dict["chimpflow_miner_specification"]
             )
 
             image_count = 2
 
             # Start the chimpflow context which includes the direct or network-addressable service.
             async with chimpflow_context:
-                # Wait long enough for the detector to activate and start ticking.
+                # Wait long enough for the miner to activate and start ticking.
                 await asyncio.sleep(2.0)
 
                 # Get list of images before we create any of the scrape-able files.
@@ -121,9 +121,9 @@ class DetectorTester(Base):
 
                 assert len(records) == image_count, "images after scraping"
 
-            logger.debug("------------ restarting detector --------------------")
+            logger.debug("------------ restarting miner --------------------")
             # Start the servers again.
-            # This covers the case where detector starts by finding existing entries in the database and doesn't double-collect those on disk.
+            # This covers the case where miner starts by finding existing entries in the database and doesn't double-collect those on disk.
             async with chimpflow_context:
                 await asyncio.sleep(2.0)
                 # Get all images after servers start up and run briefly.

@@ -7,7 +7,7 @@ import logging
 from chimpflow_cli.subcommands.base import ArgKeywords, Base
 
 # Chimpflow context creator.
-from chimpflow_lib.detectors.context import Context
+from chimpflow_lib.miners.context import Context
 
 # Xchembku client context.
 from xchembku_api.datafaces.context import Context as XchembkuDatafacesContext
@@ -43,7 +43,7 @@ class Service(Base):
             configuration["xchembku_dataface_specification"]
         ):
             # Make a service context from the specification in the configuration.
-            context = Context(configuration["chimpflow_detector_specification"])
+            context = Context(configuration["chimpflow_miner_specification"])
 
             # Open the context which starts the service process.
             async with context:

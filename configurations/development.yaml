@@ -18,17 +18,17 @@ external_access_bits:
     dataface_port: &CHIMPFLOW_PORT 27821
 
 # The chimpflow direct access.
-chimpflow_detector_specification_direct_poll:
+chimpflow_miner_specification_direct_poll:
     &CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
-    type: "chimpflow_lib.detectors.direct_poll"
+    type: "chimpflow_lib.miners.direct_poll"
     type_specific_tbd:
         directories:
             - "${output_directory}/images"
         recursive: True
 
 # The chimpflow client/server composite.
-chimpflow_detector_specification:
-    type: "chimpflow_lib.detectors.aiohttp"
+chimpflow_miner_specification:
+    type: "chimpflow_lib.miners.aiohttp"
     type_specific_tbd:
         # The remote chimpflow server access.
         aiohttp_specification:
@@ -36,7 +36,7 @@ chimpflow_detector_specification:
             client_host: "127.0.0.1"
             port: *CHIMPFLOW_PORT
         # The local implementation of the chimpflow.
-        direct_detector_specification: *CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
+        direct_miner_specification: *CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
     context:
         start_as: process
 

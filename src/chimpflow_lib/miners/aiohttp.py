@@ -12,22 +12,22 @@ from dls_utilpack.thing import Thing
 # Base class for an aiohttp server.
 from chimpflow_lib.base_aiohttp import BaseAiohttp
 
-# Detector protocolj things.
-from chimpflow_lib.detectors.constants import Commands, Keywords
+# Miner protocolj things.
+from chimpflow_lib.miners.constants import Commands, Keywords
 
-# Factory to make a Detector.
-from chimpflow_lib.detectors.detectors import Detectors
+# Factory to make a Miner.
+from chimpflow_lib.miners.miners import Miners
 
 logger = logging.getLogger(__name__)
 
-thing_type = "chimpflow_lib.detectors.aiohttp"
+thing_type = "chimpflow_lib.miners.aiohttp"
 
 
 # ------------------------------------------------------------------------------------------
 class Aiohttp(Thing, BaseAiohttp):
     """
-    Object representing an image detector.
-    The behavior is to start a direct detector coro task or process
+    Object representing an image miner.
+    The behavior is to start a direct miner coro task or process
     to waken every few seconds and scan for incoming files.
 
     Then start up a web server to handle generic commands and queries.
@@ -40,7 +40,7 @@ class Aiohttp(Thing, BaseAiohttp):
             self, specification["type_specific_tbd"]["aiohttp_specification"]
         )
 
-        self.__direct_detector = None
+        self.__direct_miner = None
 
     # ----------------------------------------------------------------------------------------
     def callsign(self) -> str:
@@ -51,36 +51,36 @@ class Aiohttp(Thing, BaseAiohttp):
             str: call sign withi class name in it
         """
 
-        return "%s %s" % ("Detector.Aiohttp", BaseAiohttp.callsign(self))
+        return "%s %s" % ("Miner.Aiohttp", BaseAiohttp.callsign(self))
 
     # ----------------------------------------------------------------------------------------
     def activate_process(self) -> None:
         """
-        Activate the direct detector and web server in a new process.
+        Activate the direct miner and web server in a new process.
 
         Meant to be called from inside a newly started process.
         """
 
         try:
-            multiprocessing.current_process().name = "detector"
+            multiprocessing.current_process().name = "miner"
 
             self.activate_process_base()
 
         except Exception as exception:
-            logger.exception("exception in detector process", exc_info=exception)
+            logger.exception("exception in miner process", exc_info=exception)
 
         logger.debug(f"[PIDAL] {callsign(self)} is returning from activate_process")
 
     # ----------------------------------------------------------------------------------------
     def activate_thread(self, loop) -> None:
         """
-        Activate the direct detector and web server in a new thread.
+        Activate the direct miner and web server in a new thread.
 
         Meant to be called from inside a newly created thread.
         """
 
         try:
-            threading.current_thread().name = "detector"
+            threading.current_thread().name = "miner"
 
             self.activate_thread_base(loop)
 
@@ -92,20 +92,20 @@ class Aiohttp(Thing, BaseAiohttp):
     # ----------------------------------------------------------------------------------------
     async def activate_coro(self) -> None:
         """
-        Activate the direct detector and web server in a two asyncio tasks.
+        Activate the direct miner and web server in a two asyncio tasks.
         """
 
         try:
-            # Build a local detector for our back-end.
-            self.__direct_detector = Detectors().build_object(
+            # Build a local miner for our back-end.
+            self.__direct_miner = Miners().build_object(
                 self.specification()["type_specific_tbd"][
-                    "direct_detector_specification"
+                    "direct_miner_specification"
                 ]
             )
 
-            logger.info("[COLSHUT] calling self.__direct_detector.activate()")
+            logger.info("[COLSHUT] calling self.__direct_miner.activate()")
             # Get the local implementation started.
-            await self.__direct_detector.activate()
+            await self.__direct_miner.activate()
 
             # ----------------------------------------------
             logger.info("[COLSHUT] calling BaseAiohttp.activate_coro_base(self)")
@@ -115,7 +115,7 @@ class Aiohttp(Thing, BaseAiohttp):
 
         except Exception as exception:
             raise RuntimeError(
-                "exception while starting detector server"
+                "exception while starting miner server"
             ) from exception
 
     # ----------------------------------------------------------------------------------------
@@ -127,15 +127,15 @@ class Aiohttp(Thing, BaseAiohttp):
 
         """
         logger.info(
-            f"[COLSHUT] in direct_shutdown self.__direct_detector is {self.__direct_detector}"
+            f"[COLSHUT] in direct_shutdown self.__direct_miner is {self.__direct_miner}"
         )
 
         # ----------------------------------------------
-        if self.__direct_detector is not None:
+        if self.__direct_miner is not None:
             # Disconnect our local dataface connection, i.e. the one which holds the database connection.
-            logger.info("[COLSHUT] awaiting self.__direct_detector.deactivate()")
-            await self.__direct_detector.deactivate()
-            logger.info("[COLSHUT] got return from self.__direct_detector.deactivate()")
+            logger.info("[COLSHUT] awaiting self.__direct_miner.deactivate()")
+            await self.__direct_miner.deactivate()
+            logger.info("[COLSHUT] got return from self.__direct_miner.deactivate()")
 
         # ----------------------------------------------
         # Let the base class stop the server listener.
@@ -149,7 +149,7 @@ class Aiohttp(Thing, BaseAiohttp):
         # logger.info(describe("args", args))
         # logger.info(describe("kwargs", kwargs))
 
-        function = getattr(self.__direct_detector, function)
+        function = getattr(self.__direct_miner, function)
 
         response = await function(*args, **kwargs)
 
