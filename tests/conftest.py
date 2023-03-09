@@ -44,6 +44,9 @@ def logging_setup():
     # Messages about starting and stopping services.
     logging.getLogger("chimpflow_lib.base_aiohttp").setLevel("INFO")
 
+    # Don't show matplotlib font debug.
+    logging.getLogger("matplotlib.font_manager").setLevel("INFO")
+
     yield None
 
 
