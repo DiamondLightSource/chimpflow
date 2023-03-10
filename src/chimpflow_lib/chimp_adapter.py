@@ -9,8 +9,10 @@ from dls_utilpack.describe import describe
 from dls_utilpack.require import require
 from xchem_chimp.detector.chimp_detector import ChimpDetector
 from xchem_chimp.detector.coord_generator import ChimpXtalCoordGenerator, PointsMode
-from xchembku_api.models.well_geometry_model import WellGeometryModel
-from xchembku_api.models.well_model import WellModel
+from xchembku_api.models.crystal_well_autolocation_model import (
+    CrystalWellAutolocationModel,
+)
+from xchembku_api.models.crystal_well_model import CrystalWellModel
 
 logger = logging.getLogger(__name__)
 
@@ -44,19 +46,21 @@ class ChimpAdapter:
             "num_classes",
         )
 
-    async def process(self, well_model: WellModel) -> WellGeometryModel:
+    async def process(
+        self, crystal_well_model: CrystalWellModel
+    ) -> CrystalWellAutolocationModel:
         """
         Process the input well and produce results.
 
         Args:
-            well (Dict): _description_
+            crystal_well_model (CrystalWellModel): The crystal well model to process for locations.
 
         Returns:
-            Dict: _description_
+            CrystalWellAutolocationModel: The autolocation data mined from the image for the crystal well.
         """
 
         # Filename is full path to where images are saved.
-        filename: Path = Path(well_model.filename)
+        filename: Path = Path(crystal_well_model.filename)
 
         detector = ChimpDetector(
             self.__model_path,
@@ -64,16 +68,21 @@ class ChimpAdapter:
             self.__num_classes,
         )
 
+        # Create a coordiate generator object.
         coord_generator = ChimpXtalCoordGenerator(
             detector, points_mode=PointsMode.SINGLE, extract_echo=False
         )
+
+        # Extract the crystal coordinates.
         coord_generator.extract_coordinates()
+
+        # Calculate well centers.
         coord_generator.calculate_well_centres()
 
         output_dict = coord_generator.combined_coords_list[0]
         logger.debug(describe("output_dict", output_dict))
 
-        model = WellGeometryModel(well_uuid=well_model.uuid)
+        model = CrystalWellAutolocationModel(crystal_well_uuid=crystal_well_model.uuid)
         model.drop_detected = output_dict["drop_detected"]
         target_position = output_dict["echo_coordinate"]
         if len(target_position) > 0:

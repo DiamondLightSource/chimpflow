@@ -5,8 +5,10 @@ import os
 import warnings
 
 from dls_utilpack.describe import describe
-from xchembku_api.models.well_geometry_model import WellGeometryModel
-from xchembku_api.models.well_model import WellModel
+from xchembku_api.models.crystal_well_autolocation_model import (
+    CrystalWellAutolocationModel,
+)
+from xchembku_api.models.crystal_well_model import CrystalWellModel
 
 # Base class for the tester.
 from tests.base import Base
@@ -39,21 +41,29 @@ class ChimpAdapterTester(Base):
     async def _main_coroutine(self, constants, output_directory):
         """ """
 
+        # Find the path of the xchem_chimp distribution (where the model file is stored).
         xchem_chimp_module = importlib.import_module("xchem_chimp.detector")
         xchem_chimp_path = os.path.dirname(inspect.getfile(xchem_chimp_module))
-        logger.info(f"xchem_chimp_path is {xchem_chimp_path}")
 
         specification = {
             "model_path": f"{xchem_chimp_path}/model/2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ.pytorch",
             "num_classes": 3,
         }
+
+        # Make the adapter object which computes the autolocation information.
         chimp_adapter = ChimpAdapter(specification)
 
-        well_model = WellModel(filename="tests/echo_test_imgs/echo_test_im_3.jpg")
+        # Make a  well model to serve as the input to the autolocation finder.
+        well_model = CrystalWellModel(
+            filename="tests/echo_test_imgs/echo_test_im_3.jpg"
+        )
 
-        well_model_geometry: WellGeometryModel = await chimp_adapter.process(well_model)
+        # Process the well image and get the resulting autolocation information.
+        well_model_autolocation: CrystalWellAutolocationModel = (
+            await chimp_adapter.process(well_model)
+        )
 
-        logger.debug(describe("well_model_geometry", well_model_geometry))
+        logger.debug(describe("well_model_autolocation", well_model_autolocation))
 
-        assert well_model_geometry.well_centroid_x == 504
-        assert well_model_geometry.well_centroid_y == 608
+        assert well_model_autolocation.well_centroid_x == 504
+        assert well_model_autolocation.well_centroid_y == 608
