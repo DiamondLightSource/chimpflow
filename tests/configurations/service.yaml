@@ -25,6 +25,9 @@ chimpflow_miner_specification_direct_poll:
         directories:
             - "${output_directory}/images"
         recursive: True
+        chimp_adapter:
+            model_name: "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ"
+            num_classes: 3
 
 # The chimpflow client/server composite.
 chimpflow_miner_specification:

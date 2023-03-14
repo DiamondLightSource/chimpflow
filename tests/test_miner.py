@@ -3,12 +3,13 @@ import logging
 import os
 import time
 
-# Context creator.
-from chimpflow_lib.miners.context import Context as MinerContext
-
 # Things xchembku provides.
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
+from xchembku_api.models.crystal_well_model import CrystalWellModel
 from xchembku_lib.datafaces.context import Context as XchembkuDatafaceContext
+
+# Context creator.
+from chimpflow_lib.miners.context import Context as MinerContext
 
 # Base class for the tester.
 from tests.base import Base
@@ -67,8 +68,14 @@ class MinerTester(Base):
 
         # Start the xchembku context which includes the direct or network-addressable service.
         async with xchembku_context:
+            logger.info("entered xchembku_context")
+
             # Reference the xchembku object which the context has set up as the default.
             xchembku = xchembku_datafaces_get_default()
+
+            # Establish database connection.
+            # TODO: Fix getting xchembku_datafaces_get_default connection in direct test.
+            records = await xchembku.fetch_crystal_wells_needing_droplocation()
 
             # Make the scrapable directory.
             images_directory = f"{output_directory}/images"
@@ -78,31 +85,25 @@ class MinerTester(Base):
                 multiconf_dict["chimpflow_miner_specification"]
             )
 
-            image_count = 2
+            image_count = 1
 
             # Start the chimpflow context which includes the direct or network-addressable service.
             async with chimpflow_context:
-                # Wait long enough for the miner to activate and start ticking.
-                await asyncio.sleep(2.0)
+                logger.info("entered chimpflow_context")
 
-                # Get list of images before we create any of the scrape-able files.
-                records = await xchembku.fetch_crystal_wells_filenames()
+                # Make a  well model to serve as the input to the autolocation finder.
+                crystal_well_model = CrystalWellModel(
+                    filename="tests/echo_test_imgs/echo_test_im_3.jpg"
+                )
+                await xchembku.originate_crystal_wells([crystal_well_model])
 
-                assert len(records) == 0, "images before any scraping"
-
-                # Create a few scrape-able files.
-                for i in range(10, 10 + image_count):
-                    filename = f"{images_directory}/%06d.jpg" % (i)
-                    with open(filename, "w") as stream:
-                        stream.write("")
-
-                # Wait for all the images to appear.
+                # Wait long enough for the miner to activate and start ticking and pick up the work.
                 time0 = time.time()
                 timeout = 5.0
                 while True:
 
-                    # Get all images.
-                    records = await xchembku.fetch_crystal_wells_filenames()
+                    # Get all which have gotten autolocations from the xchem-chimp.
+                    records = await xchembku.fetch_crystal_wells_needing_droplocation()
 
                     # Stop looping when we got the images we expect.
                     if len(records) >= image_count:
@@ -113,20 +114,3 @@ class MinerTester(Base):
                             f"only {len(records)} images out of {image_count} registered within {timeout} seconds"
                         )
                     await asyncio.sleep(1.0)
-
-                # Wait a couple more seconds to make sure there are no extra images appearing.
-                await asyncio.sleep(2.0)
-                # Get all images.
-                records = await xchembku.fetch_crystal_wells_filenames()
-
-                assert len(records) == image_count, "images after scraping"
-
-            logger.debug("------------ restarting miner --------------------")
-            # Start the servers again.
-            # This covers the case where miner starts by finding existing entries in the database and doesn't double-collect those on disk.
-            async with chimpflow_context:
-                await asyncio.sleep(2.0)
-                # Get all images after servers start up and run briefly.
-                records = await xchembku.fetch_crystal_wells_filenames()
-
-                assert len(records) == image_count, "images after restarting scraper"

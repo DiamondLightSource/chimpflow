@@ -1,7 +1,4 @@
-import importlib
-import inspect
 import logging
-import os
 import warnings
 
 from dls_utilpack.describe import describe
@@ -41,12 +38,8 @@ class ChimpAdapterTester(Base):
     async def _main_coroutine(self, constants, output_directory):
         """ """
 
-        # Find the path of the xchem_chimp distribution (where the model file is stored).
-        xchem_chimp_module = importlib.import_module("xchem_chimp.detector")
-        xchem_chimp_path = os.path.dirname(inspect.getfile(xchem_chimp_module))
-
         specification = {
-            "model_path": f"{xchem_chimp_path}/model/2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ.pytorch",
+            "model_name": "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ",
             "num_classes": 3,
         }
 

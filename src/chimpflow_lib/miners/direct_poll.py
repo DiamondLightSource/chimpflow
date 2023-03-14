@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Dict, List
+from typing import List
 
 from dls_utilpack.callsign import callsign
 from dls_utilpack.explain import explain2
@@ -8,6 +8,10 @@ from dls_utilpack.require import require
 
 # Global dataface.
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
+from xchembku_api.models.crystal_well_autolocation_model import (
+    CrystalWellAutolocationModel,
+)
+from xchembku_api.models.crystal_well_model import CrystalWellModel
 
 # Miner adapter to chimp package.
 from chimpflow_lib.chimp_adapter import ChimpAdapter
@@ -116,19 +120,24 @@ class DirectPoll(MinerBase):
         """
 
         # Get eligible wells from xchembku.
-        wells: List[Dict] = await self.__xchembku.query_crystal_wells_for_chimpflow()
+        well_models: List[
+            CrystalWellModel
+        ] = await self.__xchembku.fetch_crystal_wells_needing_autolocation()
 
-        if len(wells) == 0:
+        if len(well_models) == 0:
             return
 
-        results = []
-        for well in wells:
+        # Start a list of results.
+        autolocation_models: List[CrystalWellAutolocationModel] = []
+        for well_model in well_models:
             # Do the chimp processing.
-            result = self.__chimp_adapter.process(well)
-            results.append(result)
+            autolocation_model = await self.__chimp_adapter.process(well_model)
+
+            # Add to the list for uploading.
+            autolocation_models.append(autolocation_model)
 
         # Send the chimp results to xchembku for storage.
-        await self.__xchembku.originate_crystal_well_locations(results)
+        await self.__xchembku.originate_crystal_well_autolocations(autolocation_models)
 
     # ----------------------------------------------------------------------------------------
     async def close_client_session(self):

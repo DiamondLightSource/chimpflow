@@ -1,18 +1,23 @@
-"""
-Script to detect positions of crystals in a folder of drop images using Mask-R-CNN based object detector.
-"""
+import importlib
+import inspect
 import logging
+import os
+import warnings
 from pathlib import Path
 from typing import Dict
 
 from dls_utilpack.describe import describe
 from dls_utilpack.require import require
-from xchem_chimp.detector.chimp_detector import ChimpDetector
 from xchem_chimp.detector.coord_generator import ChimpXtalCoordGenerator, PointsMode
 from xchembku_api.models.crystal_well_autolocation_model import (
     CrystalWellAutolocationModel,
 )
 from xchembku_api.models.crystal_well_model import CrystalWellModel
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    from xchem_chimp.detector.chimp_detector import ChimpDetector
+
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +40,10 @@ class ChimpAdapter:
         """
         self.__specification = specification
 
-        self.__model_path = require(
+        self.__model_name = require(
             "specification",
             specification,
-            "model_path",
+            "model_name",
         )
         self.__num_classes = require(
             "specification",
@@ -59,11 +64,15 @@ class ChimpAdapter:
             CrystalWellAutolocationModel: The autolocation data mined from the image for the crystal well.
         """
 
+        # Find the path of the xchem_chimp distribution (where the model files are stored).
+        xchem_chimp_module = importlib.import_module("xchem_chimp.detector")
+        xchem_chimp_path = os.path.dirname(inspect.getfile(xchem_chimp_module))
+
         # Filename is full path to where images are saved.
         filename: Path = Path(crystal_well_model.filename)
 
         detector = ChimpDetector(
-            self.__model_path,
+            f"{xchem_chimp_path}/model/{self.__model_name}.pytorch",
             [str(filename)],
             self.__num_classes,
         )
@@ -86,11 +95,13 @@ class ChimpAdapter:
         model.drop_detected = output_dict["drop_detected"]
         target_position = output_dict["echo_coordinate"]
         if len(target_position) > 0:
-            model.target_position_x, model.target_position_y = target_position[0]
+            model.target_position_x = target_position[0][0]
+            model.target_position_y = target_position[0][1]
         well_centroid = output_dict["well_centroid"]
-        model.well_centroid_x, model.well_centroid_y = well_centroid
+        model.well_centroid_x = int(well_centroid[0])
+        model.well_centroid_y = int(well_centroid[1])
         model.number_of_crystals = len(output_dict["xtal_coordinates"])
-        model.crystal_coordinates = output_dict["xtal_coordinates"]
+        model.crystal_coordinates = list(output_dict["xtal_coordinates"])
 
         # request_dict[ImageFieldnames.FILENAME] = str(im_path)
         # if output_dict["drop_detected"] is True:
