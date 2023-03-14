@@ -73,10 +73,6 @@ class MinerTester(Base):
             # Reference the xchembku object which the context has set up as the default.
             xchembku = xchembku_datafaces_get_default()
 
-            # Establish database connection.
-            # TODO: Fix getting xchembku_datafaces_get_default connection in direct test.
-            records = await xchembku.fetch_crystal_wells_needing_droplocation()
-
             # Make the scrapable directory.
             images_directory = f"{output_directory}/images"
             os.makedirs(images_directory)
