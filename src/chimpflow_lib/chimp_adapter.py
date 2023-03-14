@@ -89,7 +89,7 @@ class ChimpAdapter:
         coord_generator.calculate_well_centres()
 
         output_dict = coord_generator.combined_coords_list[0]
-        logger.debug(describe("output_dict", output_dict))
+        # logger.debug(describe("output_dict", output_dict))
 
         model = CrystalWellAutolocationModel(crystal_well_uuid=crystal_well_model.uuid)
         model.drop_detected = output_dict["drop_detected"]

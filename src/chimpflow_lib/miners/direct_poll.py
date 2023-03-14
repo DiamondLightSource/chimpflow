@@ -51,7 +51,9 @@ class DirectPoll(MinerBase):
         )
 
         # We will use the dataface to query for un-chimped images and update the results.
+        logger.debug(f"[XKBUST] getting default xchembku for {id(self)}")
         self.__xchembku = xchembku_datafaces_get_default()
+        logger.debug("[XKBUST] got default xchembku")
 
         # This flag will stop the ticking async task.
         self.__keep_ticking = True

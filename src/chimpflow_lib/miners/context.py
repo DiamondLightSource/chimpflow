@@ -49,6 +49,7 @@ class Context(ContextBase):
 
         # Build the object according to the specification.
         self.server = Miners().build_object(self.specification())
+        logger.debug(f"[XKBUST] built server {id(self.server)}")
 
         # If there is more than one miner, the last one defined will be the default.
         miners_set_default(self.server)
