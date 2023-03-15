@@ -3,13 +3,17 @@ import logging
 import os
 import time
 
+from xchembku_api.datafaces.context import Context as XchembkuDatafaceClientContext
+
 # Things xchembku provides.
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
 from xchembku_api.models.crystal_well_model import CrystalWellModel
-from xchembku_lib.datafaces.context import Context as XchembkuDatafaceContext
 
-# Context creator.
-from chimpflow_lib.miners.context import Context as MinerContext
+# Client context creator.
+from chimpflow_api.miners.context import Context as MinerClientContext
+
+# Server context creator.
+from chimpflow_lib.miners.context import Context as MinerServerContext
 
 # Base class for the tester.
 from tests.base import Base
@@ -62,51 +66,64 @@ class MinerTester(Base):
         multiconf_dict = await multiconf.load()
 
         # Reference the dict entry for the xchembku dataface.
-        xchembku_context = XchembkuDatafaceContext(
-            multiconf_dict["xchembku_dataface_specification"]
+        xchembku_dataface_specification = multiconf_dict[
+            "xchembku_dataface_specification"
+        ]
+
+        # Reference the dict entry for the xchembku dataface.
+        xchembku_client_context = XchembkuDatafaceClientContext(
+            xchembku_dataface_specification
         )
 
-        # Start the xchembku context which includes the direct or network-addressable service.
-        async with xchembku_context:
-            logger.info("entered xchembku_context")
+        miner_specification = multiconf_dict["chimpflow_miner_specification"]
+        # Make the server context.
+        miner_server_context = MinerServerContext(miner_specification)
 
-            # Reference the xchembku object which the context has set up as the default.
-            xchembku = xchembku_datafaces_get_default()
+        # Make the client context.
+        miner_client_context = MinerClientContext(miner_specification)
 
-            # Make the scrapable directory.
-            images_directory = f"{output_directory}/images"
-            os.makedirs(images_directory)
+        image_count = 1
 
-            chimpflow_context = MinerContext(
-                multiconf_dict["chimpflow_miner_specification"]
-            )
+        # Start the client context for the direct access to the xchembku.
+        async with xchembku_client_context:
+            # Start the matching xchembku client context.
+            async with miner_client_context:
+                # Start the miner server context.
+                async with miner_server_context:
+                    await self.__run_part1(image_count, constants, output_directory)
 
-            image_count = 1
+    # ----------------------------------------------------------------------------------------
 
-            # Start the chimpflow context which includes the direct or network-addressable service.
-            async with chimpflow_context:
-                logger.info("entered chimpflow_context")
+    async def __run_part1(self, image_count, constants, output_directory):
+        """ """
+        # Reference the xchembku object which the context has set up as the default.
+        xchembku = xchembku_datafaces_get_default()
 
-                # Make a  well model to serve as the input to the autolocation finder.
-                crystal_well_model = CrystalWellModel(
-                    filename="tests/echo_test_imgs/echo_test_im_3.jpg"
+        # Make the scrapable directory.
+        images_directory = f"{output_directory}/images"
+        os.makedirs(images_directory)
+
+        # Make a well model to serve as the input to the autolocation finder.
+        crystal_well_model = CrystalWellModel(
+            filename="tests/echo_test_imgs/echo_test_im_3.jpg"
+        )
+        await xchembku.originate_crystal_wells([crystal_well_model])
+
+        # Wait long enough for the miner to activate and start ticking and pick up the work and do it.
+        time0 = time.time()
+        timeout = 5.0
+        while True:
+
+            # Get all which have gotten autolocations from the xchem-chimp.
+            records = await xchembku.fetch_crystal_wells_needing_droplocation()
+
+            # Stop looping when we got the images we expect.
+            if len(records) >= image_count:
+                break
+
+            if time.time() - time0 > timeout:
+                raise RuntimeError(
+                    f"only {len(records)} images out of {image_count}"
+                    f" registered within {timeout} seconds"
                 )
-                await xchembku.originate_crystal_wells([crystal_well_model])
-
-                # Wait long enough for the miner to activate and start ticking and pick up the work.
-                time0 = time.time()
-                timeout = 5.0
-                while True:
-
-                    # Get all which have gotten autolocations from the xchem-chimp.
-                    records = await xchembku.fetch_crystal_wells_needing_droplocation()
-
-                    # Stop looping when we got the images we expect.
-                    if len(records) >= image_count:
-                        break
-
-                    if time.time() - time0 > timeout:
-                        raise RuntimeError(
-                            f"only {len(records)} images out of {image_count} registered within {timeout} seconds"
-                        )
-                    await asyncio.sleep(1.0)
+            await asyncio.sleep(1.0)

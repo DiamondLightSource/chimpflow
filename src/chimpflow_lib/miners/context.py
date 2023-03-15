@@ -1,7 +1,5 @@
 import logging
-from typing import Any, Dict, Optional
-
-from chimpflow_api.miners.context import Context as MinerContext
+from typing import Dict
 
 # Base class for an asyncio context.
 from chimpflow_lib.contexts.base import Base as ContextBase
@@ -35,7 +33,6 @@ class Context(ContextBase):
                 All other keys in the specification relate to creating the miner object.
         """
         ContextBase.__init__(self, thing_type, specification)
-        self.__api_context: Optional[Any] = None
 
     # ----------------------------------------------------------------------------------------
     async def aenter(self) -> None:
@@ -49,7 +46,6 @@ class Context(ContextBase):
 
         # Build the object according to the specification.
         self.server = Miners().build_object(self.specification())
-        logger.debug(f"[XKBUST] built server {id(self.server)}")
 
         # If there is more than one miner, the last one defined will be the default.
         miners_set_default(self.server)
@@ -64,12 +60,9 @@ class Context(ContextBase):
             await self.server.start_process()
 
         # Not running as a service?
-        else:
+        elif self.context_specification.get("start_as") is None:
             # We need to activate the tick() task.
             await self.server.activate()
-
-        self.__api_context = MinerContext(self.specification())
-        await self.__api_context.aenter()
 
     # ----------------------------------------------------------------------------------------
     async def aexit(self) -> None:
@@ -95,9 +88,3 @@ class Context(ContextBase):
 
             if self.context_specification.get("start_as") is None:
                 await self.server.deactivate()
-
-        if self.__api_context is not None:
-            await self.__api_context.aexit()
-
-        # Clear the global variable.  Important between pytests.
-        miners_set_default(None)
