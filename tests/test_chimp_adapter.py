@@ -58,8 +58,6 @@ class ChimpAdapterTester(Base):
             await chimp_adapter.process(well_model)
         )
 
-        logger.debug(describe("well_model_autolocation", well_model_autolocation))
-
         assert well_model_autolocation.drop_detected
 
         assert well_model_autolocation.number_of_crystals == 2
