@@ -1,6 +1,7 @@
 import logging
 import warnings
 
+import pytest
 from dls_utilpack.describe import describe
 from xchembku_api.models.crystal_well_autolocation_model import (
     CrystalWellAutolocationModel,
@@ -38,6 +39,7 @@ class ChimpAdapterTester(Base):
     async def _main_coroutine(self, constants, output_directory):
         """ """
 
+        # Make a specification for the chimp adapter.
         specification = {
             "model_name": "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ",
             "num_classes": 3,
@@ -46,7 +48,7 @@ class ChimpAdapterTester(Base):
         # Make the adapter object which computes the autolocation information.
         chimp_adapter = ChimpAdapter(specification)
 
-        # Make a  well model to serve as the input to the autolocation finder.
+        # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
             filename="tests/echo_test_imgs/echo_test_im_3.jpg"
         )
@@ -57,6 +59,13 @@ class ChimpAdapterTester(Base):
         )
 
         logger.debug(describe("well_model_autolocation", well_model_autolocation))
+
+        assert well_model_autolocation.drop_detected
+
+        assert well_model_autolocation.number_of_crystals == 2
+
+        assert well_model_autolocation.auto_target_position_x == pytest.approx(419, 3)
+        assert well_model_autolocation.auto_target_position_y == pytest.approx(764, 3)
 
         assert well_model_autolocation.well_centroid_x == 504
         assert well_model_autolocation.well_centroid_y == 608

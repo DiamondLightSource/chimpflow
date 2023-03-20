@@ -1,11 +1,13 @@
 import importlib
 import inspect
+import json
 import logging
 import os
 import warnings
 from pathlib import Path
 from typing import Dict
 
+import numpy as np
 from dls_utilpack.describe import describe
 from dls_utilpack.require import require
 from xchem_chimp.detector.coord_generator import ChimpXtalCoordGenerator, PointsMode
@@ -17,6 +19,15 @@ from xchembku_api.models.crystal_well_model import CrystalWellModel
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     from xchem_chimp.detector.chimp_detector import ChimpDetector
+
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, np.int64):
+            return int(obj)
+        return json.JSONEncoder.default(self, obj)
 
 
 logger = logging.getLogger(__name__)
@@ -79,7 +90,7 @@ class ChimpAdapter:
 
         # Create a coordiate generator object.
         coord_generator = ChimpXtalCoordGenerator(
-            detector, points_mode=PointsMode.SINGLE, extract_echo=False
+            detector, points_mode=PointsMode.SINGLE, extract_echo=True
         )
 
         # Extract the crystal coordinates.
@@ -88,18 +99,22 @@ class ChimpAdapter:
         # Calculate well centers.
         coord_generator.calculate_well_centres()
 
+        logging.info(
+            f"extracted coordinates\n{json.dumps(coord_generator.combined_coords_list, indent=4, cls=NumpyEncoder)}"
+        )
         output_dict = coord_generator.combined_coords_list[0]
-        # logger.debug(describe("output_dict", output_dict))
+        logger.debug(describe("output_dict", output_dict))
 
         model = CrystalWellAutolocationModel(crystal_well_uuid=crystal_well_model.uuid)
         model.drop_detected = output_dict["drop_detected"]
         target_position = output_dict["echo_coordinate"]
         if len(target_position) > 0:
-            model.target_position_x = target_position[0][0]
-            model.target_position_y = target_position[0][1]
+            model.auto_target_position_x = target_position[0][0]
+            model.auto_target_position_y = target_position[0][1]
         well_centroid = output_dict["well_centroid"]
-        model.well_centroid_x = int(well_centroid[0])
-        model.well_centroid_y = int(well_centroid[1])
+        if well_centroid is not None:
+            model.well_centroid_x = int(well_centroid[0])
+            model.well_centroid_y = int(well_centroid[1])
         model.number_of_crystals = len(output_dict["xtal_coordinates"])
         model.crystal_coordinates = list(output_dict["xtal_coordinates"])
 
@@ -120,5 +135,62 @@ class ChimpAdapter:
         #     request_dict[ImageFieldnames.IS_USABLE] = False
         # logging.info(f"Sending request for {im_path} to EchoLocator database")
         # asyncio.run(self.send_item_to_echolocator(request_dict))
+
+        # The combined_coords_list is structured like this:
+        # [
+        #     {
+        #         "image_path": "tests/echo_test_imgs/echo_test_im_3.jpg",
+        #         "mask_index": [
+        #             0,
+        #             1,
+        #             2
+        #         ],
+        #         "masks": [],
+        #         "probs": [],
+        #         "labels": [
+        #             1,
+        #             2,
+        #             2,
+        #             1,
+        #             2,
+        #             2,
+        #             2
+        #         ],
+        #         "bounding_boxes": [],
+        #         "xtal_coordinates": [
+        #             [
+        #                 [
+        #                     552,
+        #                     616
+        #                 ]
+        #             ],
+        #             [
+        #                 [
+        #                     598,
+        #                     840
+        #                 ]
+        #             ]
+        #         ],
+        #         "well_centroid": [
+        #             504,
+        #             608
+        #         ],
+        #         "echo_coordinate": [
+        #             [
+        #                 419,
+        #                 764
+        #             ]
+        #         ],
+        #         "real_space_offset": [
+        #             -241.0,
+        #             443.0
+        #         ],
+        #         "original_image_shape": [
+        #             1024,
+        #             1224
+        #         ],
+        #         "drop_detected": true
+        #     }
+        # ]
 
         return model

@@ -4,10 +4,7 @@ import logging
 from chimpflow_api.context_base import ContextBase
 
 # Things created in the context.
-from chimpflow_api.miners.miners import (
-    Miners,
-    chimpflow_miners_set_default,
-)
+from chimpflow_api.miners.miners import Miners, chimpflow_miners_set_default
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +20,14 @@ class Context(ContextBase):
 
     # ----------------------------------------------------------------------------------------
     def __init__(self, specification):
-        self.__specification = specification
+        ContextBase.__init__(self, specification)
 
     # ----------------------------------------------------------------------------------------
     async def aenter(self):
         """ """
 
         # Build the object according to the specification.
-        self.interface = Miners().build_object(self.__specification)
+        self.interface = Miners().build_object(self.specification)
 
         # If there is more than one miner, the last one defined will be the default.
         chimpflow_miners_set_default(self.interface)
