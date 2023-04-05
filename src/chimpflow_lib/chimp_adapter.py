@@ -96,8 +96,10 @@ class ChimpAdapter:
         model.drop_detected = output_dict["drop_detected"]
         target_position = output_dict["echo_coordinate"]
         if len(target_position) > 0:
-            model.auto_target_position_x = target_position[0][0]
-            model.auto_target_position_y = target_position[0][1]
+            # The target position is a list of (np.int64, np.int64), so have to convert to int.
+            # TODO: Change the CrystalWellAutolocationModel to do type checking on field assignment.
+            model.auto_target_position_x = int(target_position[0][0])
+            model.auto_target_position_y = int(target_position[0][1])
         well_centroid = output_dict["well_centroid"]
         if well_centroid is not None:
             model.well_centroid_x = int(well_centroid[0])

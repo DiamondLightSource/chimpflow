@@ -7,6 +7,7 @@ from xchembku_api.datafaces.context import Context as XchembkuDatafaceClientCont
 
 # Things xchembku provides.
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
+from xchembku_api.models.crystal_well_filter_model import CrystalWellFilterModel
 from xchembku_api.models.crystal_well_model import CrystalWellModel
 
 # Client context creator.
@@ -111,11 +112,13 @@ class MinerTester(Base):
 
         # Wait long enough for the miner to activate and start ticking and pick up the work and do it.
         time0 = time.time()
-        timeout = 5.0
+        timeout = 10.0
         while True:
 
             # Get all which have gotten autolocations from the xchem-chimp.
-            records = await xchembku.fetch_crystal_wells_needing_droplocation()
+            records = await xchembku.fetch_crystal_wells_needing_droplocation(
+                CrystalWellFilterModel()
+            )
 
             # Stop looping when we got the images we expect.
             if len(records) >= image_count:

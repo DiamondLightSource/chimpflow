@@ -17,17 +17,23 @@ logging_settings:
 external_access_bits:
     dataface_port: &CHIMPFLOW_PORT 27821
 
+# The xchembku_dataface direct access.
+xchembku_dataface_specification: &XCHEMBKU_DATAFACE_SPECIFICATION
+    type: "xchembku_lib.xchembku_datafaces.direct"
+    database:
+        type: "xchembku_lib.xchembku_databases.normsql"
+        filename: "${output_directory}/xchembku.sqlite"
+        log_level: "WARNING"
+
 # The chimpflow direct access.
 chimpflow_miner_specification_direct_poll:
     &CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
     type: "chimpflow_lib.miners.direct_poll"
     type_specific_tbd:
-        directories:
-            - "${output_directory}/images"
-        recursive: True
         chimp_adapter:
             model_name: "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ"
             num_classes: 3
+        xchembku_dataface_specification: *XCHEMBKU_DATAFACE_SPECIFICATION
 
 # The chimpflow client/server composite.
 chimpflow_miner_specification:
@@ -42,11 +48,3 @@ chimpflow_miner_specification:
         direct_miner_specification: *CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
     context:
         start_as: coro
-
-# The xchembku_dataface direct access.
-xchembku_dataface_specification:
-    type: "xchembku_lib.xchembku_datafaces.direct"
-    database:
-        type: "xchembku_lib.xchembku_databases.normsql"
-        filename: "${output_directory}/xchembku.sqlite"
-        log_level: "WARNING"

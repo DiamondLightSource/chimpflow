@@ -6,8 +6,8 @@ from dls_utilpack.callsign import callsign
 from dls_utilpack.explain import explain2
 from dls_utilpack.require import require
 
-# Global dataface.
-from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
+# Dataface client context.
+from xchembku_api.datafaces.context import Context as XchembkuDatafaceClientContext
 from xchembku_api.models.crystal_well_autolocation_model import (
     CrystalWellAutolocationModel,
 )
@@ -50,10 +50,10 @@ class DirectPoll(MinerBase):
             f"{s} type_specific_tbd", t, "chimp_adapter"
         )
 
-        # We will use the dataface to query for un-chimped images and update the results.
-        logger.debug(f"[XKBUST] getting default xchembku for {id(self)}")
-        self.__xchembku = xchembku_datafaces_get_default()
-        logger.debug("[XKBUST] got default xchembku")
+        # We will use the dataface to discover previously processed files.
+        # We will also discovery newly find files into this database.
+        self.__xchembku_client_context = None
+        self.__xchembku = None
 
         # This flag will stop the ticking async task.
         self.__keep_ticking = True
@@ -70,6 +70,25 @@ class DirectPoll(MinerBase):
         This implementation just starts the coro task to awaken every few seconds
         and query xchembku and do chimp crystal processing on what it is given.
         """
+
+        # Make the xchembku client context.
+        s = require(
+            f"{callsign(self)} specification",
+            self.specification(),
+            "type_specific_tbd",
+        )
+        s = require(
+            f"{callsign(self)} type_specific_tbd",
+            s,
+            "xchembku_dataface_specification",
+        )
+        self.__xchembku_client_context = XchembkuDatafaceClientContext(s)
+
+        # Activate the context.
+        await self.__xchembku_client_context.aenter()
+
+        # Get a reference to the xchembku interface provided by the context.
+        self.__xchembku = self.__xchembku_client_context.get_interface()
 
         # Poll periodically.
         self.__tick_future = asyncio.get_event_loop().create_task(self.tick())
@@ -90,11 +109,14 @@ class DirectPoll(MinerBase):
             # Wait for the ticking to stop.
             await self.__tick_future
 
-        # Have we got a connection to xchembku?
-        if self.__xchembku is not None:
-            # We need to close this connection.
-            logger.info("[COLSHUT] calling self.__xchembku.close_client_session()")
-            await self.__xchembku.close_client_session()
+        # Forget we have an xchembku client reference.
+        self.__xchembku = None
+
+        if self.__xchembku_client_context is not None:
+            logger.debug(f"[ECHDON] {callsign(self)} exiting __xchembku_client_context")
+            await self.__xchembku_client_context.aexit()
+            logger.debug(f"[ECHDON] {callsign(self)} exited __xchembku_client_context")
+            self.__xchembku_client_context = None
 
     # ----------------------------------------------------------------------------------------
     async def tick(self) -> None:
