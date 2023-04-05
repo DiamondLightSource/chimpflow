@@ -47,4 +47,4 @@ chimpflow_miner_specification:
         # The local implementation of the chimpflow.
         direct_miner_specification: *CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
     context:
-        start_as: coro
+        start_as: process
