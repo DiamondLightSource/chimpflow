@@ -62,7 +62,7 @@ class Aiohttp(Thing, BaseAiohttp):
         """
 
         try:
-            multiprocessing.current_process().name = "miner"
+            multiprocessing.current_process().name = "miner.chimpflow"
 
             self.activate_process_base()
 
@@ -98,9 +98,7 @@ class Aiohttp(Thing, BaseAiohttp):
         try:
             # Build a local miner for our back-end.
             self.__direct_miner = Miners().build_object(
-                self.specification()["type_specific_tbd"][
-                    "direct_miner_specification"
-                ]
+                self.specification()["type_specific_tbd"]["direct_miner_specification"]
             )
 
             logger.info("[COLSHUT] calling self.__direct_miner.activate()")
@@ -114,9 +112,7 @@ class Aiohttp(Thing, BaseAiohttp):
             logger.info("[COLSHUT] returning")
 
         except Exception as exception:
-            raise RuntimeError(
-                "exception while starting miner server"
-            ) from exception
+            raise RuntimeError("exception while starting miner server") from exception
 
     # ----------------------------------------------------------------------------------------
     async def direct_shutdown(self) -> None:

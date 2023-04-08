@@ -1,11 +1,11 @@
 # Use standard logging in this module.
 import logging
 
-# Types.
-from chimpflow_api.miners.constants import Types
-
 # Exceptions.
 from chimpflow_api.exceptions import NotFound
+
+# Types.
+from chimpflow_api.miners.constants import Types
 
 # Class managing list of things.
 from chimpflow_api.things import Things

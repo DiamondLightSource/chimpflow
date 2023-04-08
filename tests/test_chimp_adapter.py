@@ -1,8 +1,8 @@
 import logging
+import uuid
 import warnings
 
 import pytest
-from dls_utilpack.describe import describe
 from xchembku_api.models.crystal_well_autolocation_model import (
     CrystalWellAutolocationModel,
 )
@@ -50,7 +50,8 @@ class ChimpAdapterTester(Base):
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
-            filename="tests/echo_test_imgs/echo_test_im_3.jpg"
+            filename="tests/echo_test_imgs/echo_test_im_3.jpg",
+            crystal_plate_uuid=str(uuid.uuid4()),
         )
 
         # Process the well image and get the resulting autolocation information.

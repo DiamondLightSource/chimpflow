@@ -3,14 +3,14 @@ import asyncio
 # Use standard logging in this module.
 import logging
 
+# Xchembku client context.
+from xchembku_api.datafaces.context import Context as XchembkuDatafacesContext
+
 # Base class for cli subcommands.
 from chimpflow_cli.subcommands.base import ArgKeywords, Base
 
 # Chimpflow context creator.
 from chimpflow_lib.miners.context import Context
-
-# Xchembku client context.
-from xchembku_api.datafaces.context import Context as XchembkuDatafacesContext
 
 logger = logging.getLogger()
 

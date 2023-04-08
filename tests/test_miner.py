@@ -7,6 +7,7 @@ from xchembku_api.datafaces.context import Context as XchembkuDatafaceClientCont
 
 # Things xchembku provides.
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
+from xchembku_api.models.crystal_plate_model import CrystalPlateModel
 from xchembku_api.models.crystal_well_filter_model import CrystalWellFilterModel
 from xchembku_api.models.crystal_well_model import CrystalWellModel
 
@@ -104,9 +105,20 @@ class MinerTester(Base):
         images_directory = f"{output_directory}/images"
         os.makedirs(images_directory)
 
+        # Make the plate on which the wells reside.
+        visit = "cm00001-1"
+        crystal_plate_model = CrystalPlateModel(
+            formulatrix__plate__id=10,
+            barcode="98ab",
+            visit=visit,
+        )
+
+        await xchembku.upsert_crystal_plates([crystal_plate_model])
+
         # Make a well model to serve as the input to the autolocation finder.
         crystal_well_model = CrystalWellModel(
-            filename="tests/echo_test_imgs/echo_test_im_3.jpg"
+            filename="tests/echo_test_imgs/echo_test_im_3.jpg",
+            crystal_plate_uuid=crystal_plate_model.uuid,
         )
         await xchembku.originate_crystal_wells([crystal_well_model])
 

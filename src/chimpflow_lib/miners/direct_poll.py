@@ -146,7 +146,9 @@ class DirectPoll(MinerBase):
         # Get eligible wells from xchembku.
         well_models: List[
             CrystalWellModel
-        ] = await self.__xchembku.fetch_crystal_wells_needing_autolocation()
+        ] = await self.__xchembku.fetch_crystal_wells_needing_autolocation(
+            why="[CHIMPFLOW POLL]"
+        )
 
         if len(well_models) == 0:
             return
@@ -155,6 +157,7 @@ class DirectPoll(MinerBase):
         autolocation_models: List[CrystalWellAutolocationModel] = []
         for well_model in well_models:
             # Do the chimp processing.
+            logger.info(f"starting chimp process for {well_model.filename}")
             autolocation_model = await self.__chimp_adapter.process(well_model)
 
             # Add to the list for uploading.
