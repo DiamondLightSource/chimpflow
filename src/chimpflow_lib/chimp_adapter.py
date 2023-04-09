@@ -1,7 +1,4 @@
-import importlib
-import inspect
 import logging
-import os
 import warnings
 from pathlib import Path
 from typing import Dict
@@ -37,7 +34,6 @@ class ChimpAdapter:
             model_path: filename of the pytorch file
             num_classes: input to chimp detect, normally always 3
         """
-        self.__specification = specification
 
         self.__model_path = require(
             "specification",
@@ -50,7 +46,7 @@ class ChimpAdapter:
             "num_classes",
         )
 
-    async def process(
+    def detect(
         self, crystal_well_model: CrystalWellModel
     ) -> CrystalWellAutolocationModel:
         """
@@ -66,6 +62,9 @@ class ChimpAdapter:
         # Filename is full path to the input filename.
         filename: Path = Path(crystal_well_model.filename)
 
+        # Make a detector object.
+        # TODO: Arrange ChimpDetector internals so that we only have to load
+        # the torch model once per server, instead of once per detection request.
         detector = ChimpDetector(
             self.__model_path,
             [str(filename)],

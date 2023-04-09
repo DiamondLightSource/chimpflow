@@ -158,7 +158,7 @@ class DirectPoll(MinerBase):
         for well_model in well_models:
             # Do the chimp processing.
             logger.info(f"starting chimp process for {well_model.filename}")
-            autolocation_model = await self.__chimp_adapter.process(well_model)
+            autolocation_model = self.__chimp_adapter.detect(well_model)
 
             # Add to the list for uploading.
             autolocation_models.append(autolocation_model)

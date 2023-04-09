@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import multiprocessing
 import os
 import time
 
@@ -33,6 +34,19 @@ class TestMinerDirectPoll:
 
         # Configuration file to use.
         configuration_file = "tests/configurations/direct_poll.yaml"
+
+        # Do the work in a separate process so that the Service test
+        # can also be run in the same pytest invocation.
+        # TODO: Figure out how to release resources from torchvision in process.
+        p = multiprocessing.Process(
+            target=self.__process,
+            args=[constants, configuration_file, output_directory],
+        )
+        p.start()
+        p.join()
+
+    # ----------------------------------------------------------------------------------------
+    def __process(self, constants, configuration_file, output_directory):
 
         MinerTester().main(constants, configuration_file, output_directory)
 

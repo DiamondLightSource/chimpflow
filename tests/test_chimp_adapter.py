@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import uuid
 import warnings
 
@@ -40,13 +41,30 @@ class ChimpAdapterTester(Base):
         """ """
 
         # Make a specification for the chimp adapter.
-        specification = {
+        self.__specification = {
             "model_path": constants["model_path"],
             "num_classes": 3,
         }
 
-        # Make the adapter object which computes the autolocation information.
-        chimp_adapter = ChimpAdapter(specification)
+        # Do the work in a separate process.
+        # TODO: Figure out how to release resources from torchvision in process.
+        p = multiprocessing.Process(target=self.__process)
+        p.start()
+        p.join()
+
+        # Do the same thing, but in a separate process.
+        p = multiprocessing.Process(target=self.__process)
+        p.start()
+        p.join()
+
+    # ----------------------------------------------------------------------------------------
+    def __process(self):
+        chimp_adapter = ChimpAdapter(self.__specification)
+
+        self.__run(chimp_adapter)
+
+    # ----------------------------------------------------------------------------------------
+    def __run(self, chimp_adapter):
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
@@ -55,8 +73,8 @@ class ChimpAdapterTester(Base):
         )
 
         # Process the well image and get the resulting autolocation information.
-        well_model_autolocation: CrystalWellAutolocationModel = (
-            await chimp_adapter.process(well_model)
+        well_model_autolocation: CrystalWellAutolocationModel = chimp_adapter.detect(
+            well_model
         )
 
         assert well_model_autolocation.drop_detected
