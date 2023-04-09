@@ -74,3 +74,5 @@ venv*
 # further build artifacts
 lockfiles/
 
+
+*.pytorch

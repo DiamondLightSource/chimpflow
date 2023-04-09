@@ -3,6 +3,7 @@ import os
 import shutil
 
 import pytest
+import requests  # type: ignore
 
 # Formatting of testing log messages.
 from dls_logformatter.dls_logformatter import DlsLogformatter
@@ -15,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------------------------
 @pytest.fixture(scope="session")
-def constants(request):
+def constants(request, model_path):
 
-    constants = {}
+    constants = {"model_path": model_path}
 
     yield constants
 
@@ -48,6 +49,32 @@ def logging_setup():
     logging.getLogger("matplotlib.font_manager").setLevel("INFO")
 
     yield None
+
+
+# --------------------------------------------------------------------------------
+@pytest.fixture(scope="session")
+def model_path():
+    # For pytest, we get the pytorch file from zendodo and put it in the cwd.
+    model_file_path = (
+        "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ.pytorch"
+    )
+    if not os.path.exists(model_file_path):
+
+        # The file which has been uploaded to Zenodo.
+        file_id = f"7810708/files/{model_file_path}"
+
+        # Set the Zenodo API base URL
+        base_url = "https://zenodo.org/record"
+        full_url = f"{base_url}/{file_id}?download=1"
+
+        # Download the file from the download URL
+        response = requests.get(full_url)
+
+        # Save the file to disk
+        with open(model_file_path, "wb") as f:
+            f.write(response.content)
+
+    return model_file_path
 
 
 # --------------------------------------------------------------------------------

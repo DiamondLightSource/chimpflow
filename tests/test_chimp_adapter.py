@@ -41,7 +41,7 @@ class ChimpAdapterTester(Base):
 
         # Make a specification for the chimp adapter.
         specification = {
-            "model_name": "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ",
+            "model_path": constants["model_path"],
             "num_classes": 3,
         }
 

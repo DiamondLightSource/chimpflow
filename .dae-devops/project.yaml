@@ -15,8 +15,10 @@ primary:
         - type: pypi
           list:
               # TODO: Dependency should be on xchembku_api, not xchembku complete.
+              - xchem-chimp
               - xchembku
               - dls_servbase
               - dls_mainiac
               - dls_multiconf
               - dls_utilpack
+              - requests

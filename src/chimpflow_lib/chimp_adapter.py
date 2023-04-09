@@ -39,10 +39,10 @@ class ChimpAdapter:
         """
         self.__specification = specification
 
-        self.__model_name = require(
+        self.__model_path = require(
             "specification",
             specification,
-            "model_name",
+            "model_path",
         )
         self.__num_classes = require(
             "specification",
@@ -63,15 +63,11 @@ class ChimpAdapter:
             CrystalWellAutolocationModel: The autolocation data mined from the image for the crystal well.
         """
 
-        # Find the path of the xchem_chimp distribution (where the model files are stored).
-        xchem_chimp_module = importlib.import_module("xchem_chimp.detector")
-        xchem_chimp_path = os.path.dirname(inspect.getfile(xchem_chimp_module))
-
-        # Filename is full path to where images are saved.
+        # Filename is full path to the input filename.
         filename: Path = Path(crystal_well_model.filename)
 
         detector = ChimpDetector(
-            f"{xchem_chimp_path}/model/{self.__model_name}.pytorch",
+            self.__model_path,
             [str(filename)],
             self.__num_classes,
         )
