@@ -62,6 +62,9 @@ class ChimpAdapter:
         # Filename is full path to the input filename.
         filename: Path = Path(crystal_well_model.filename)
 
+        if not filename.exists():
+            raise RuntimeError(f"could not find file {str(filename)}")
+
         # Make a detector object.
         # TODO: Arrange ChimpDetector internals so that we only have to load
         # the torch model once per server, instead of once per detection request.
@@ -100,8 +103,8 @@ class ChimpAdapter:
             model.well_centroid_y = int(well_centroid[1])
         model.number_of_crystals = len(output_dict["xtal_coordinates"])
 
-        # We store the crystal coordinates in the model too.
-        model.crystal_coordinates = list(output_dict["xtal_coordinates"])
+        # TODO: Store the chimp detected crystal coordinates in the model too.
+        # model.crystal_coordinates = list(output_dict["xtal_coordinates"])
 
         # request_dict[ImageFieldnames.FILENAME] = str(im_path)
         # if output_dict["drop_detected"] is True:

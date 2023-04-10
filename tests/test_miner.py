@@ -134,7 +134,7 @@ class MinerTester(Base):
             filename="tests/echo_test_imgs/echo_test_im_3.jpg",
             crystal_plate_uuid=crystal_plate_model.uuid,
         )
-        await xchembku.originate_crystal_wells([crystal_well_model])
+        await xchembku.upsert_crystal_wells([crystal_well_model])
 
         # Wait long enough for the miner to activate and start ticking and pick up the work and do it.
         time0 = time.time()
