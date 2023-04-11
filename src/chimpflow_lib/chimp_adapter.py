@@ -3,6 +3,7 @@ import warnings
 from pathlib import Path
 from typing import Dict
 
+from dls_utilpack.describe import describe
 from dls_utilpack.require import require
 from xchem_chimp.detector.coord_generator import ChimpXtalCoordGenerator, PointsMode
 from xchembku_api.models.crystal_well_autolocation_model import (
@@ -85,6 +86,8 @@ class ChimpAdapter:
         # Calculate well centers.
         coord_generator.calculate_well_centres()
         output_dict = coord_generator.combined_coords_list[0]
+
+        logger.debug(describe("output_dict", output_dict))
 
         # Construct a new autolocation object to hold the results.
         model = CrystalWellAutolocationModel(

@@ -48,27 +48,30 @@ class ChimpAdapterTester(Base):
 
         # Do the work in a separate process.
         # TODO: Figure out how to release resources from torchvision in process.
-        p = multiprocessing.Process(target=self.__process)
+        p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_1])
         p.start()
         p.join()
 
-        # Do the same thing, but in a separate process.
-        p = multiprocessing.Process(target=self.__process)
+        p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_2])
+        p.start()
+        p.join()
+
+        p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_3])
         p.start()
         p.join()
 
     # ----------------------------------------------------------------------------------------
-    def __process(self):
+    def __process(self, run):
         chimp_adapter = ChimpAdapter(self.__specification)
 
-        self.__run(chimp_adapter)
+        run(chimp_adapter)
 
     # ----------------------------------------------------------------------------------------
-    def __run(self, chimp_adapter):
+    def __run_97wo_01A_1(self, chimp_adapter):
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
-            filename="tests/echo_test_imgs/echo_test_im_3.jpg",
+            filename="tests/echo_test_imgs/97wo_01A_1.jpg",
             crystal_plate_uuid=str(uuid.uuid4()),
         )
 
@@ -79,10 +82,58 @@ class ChimpAdapterTester(Base):
 
         assert well_model_autolocation.drop_detected
 
-        assert well_model_autolocation.number_of_crystals == 2
+        assert well_model_autolocation.number_of_crystals == pytest.approx(30, 1)
 
-        assert well_model_autolocation.auto_target_position_x == pytest.approx(419, 3)
-        assert well_model_autolocation.auto_target_position_y == pytest.approx(764, 3)
+        assert well_model_autolocation.auto_target_position_x == pytest.approx(479, 3)
+        assert well_model_autolocation.auto_target_position_y == pytest.approx(475, 3)
+
+        assert well_model_autolocation.well_centroid_x == 504
+        assert well_model_autolocation.well_centroid_y == 600
+
+    # ----------------------------------------------------------------------------------------
+    def __run_97wo_01A_2(self, chimp_adapter):
+
+        # Make a well model to serve as the input to the chimp adapter process method.
+        well_model = CrystalWellModel(
+            filename="tests/echo_test_imgs/97wo_01A_2.jpg",
+            crystal_plate_uuid=str(uuid.uuid4()),
+        )
+
+        # Process the well image and get the resulting autolocation information.
+        well_model_autolocation: CrystalWellAutolocationModel = chimp_adapter.detect(
+            well_model
+        )
+
+        assert well_model_autolocation.drop_detected
+
+        assert well_model_autolocation.number_of_crystals == pytest.approx(13, 1)
+
+        assert well_model_autolocation.auto_target_position_x == pytest.approx(475, 3)
+        assert well_model_autolocation.auto_target_position_y == pytest.approx(745, 3)
+
+        assert well_model_autolocation.well_centroid_x == 536
+        assert well_model_autolocation.well_centroid_y == 600
+
+    # ----------------------------------------------------------------------------------------
+    def __run_97wo_01A_3(self, chimp_adapter):
+
+        # Make a well model to serve as the input to the chimp adapter process method.
+        well_model = CrystalWellModel(
+            filename="tests/echo_test_imgs/97wo_01A_3.jpg",
+            crystal_plate_uuid=str(uuid.uuid4()),
+        )
+
+        # Process the well image and get the resulting autolocation information.
+        well_model_autolocation: CrystalWellAutolocationModel = chimp_adapter.detect(
+            well_model
+        )
+
+        assert well_model_autolocation.drop_detected
+
+        assert well_model_autolocation.number_of_crystals == pytest.approx(2, 1)
+
+        assert well_model_autolocation.auto_target_position_x == pytest.approx(417, 3)
+        assert well_model_autolocation.auto_target_position_y == pytest.approx(672, 3)
 
         assert well_model_autolocation.well_centroid_x == 504
         assert well_model_autolocation.well_centroid_y == 608
