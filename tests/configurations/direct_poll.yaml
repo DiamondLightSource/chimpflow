@@ -17,3 +17,5 @@ chimpflow_miner_specification:
             model_path: "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ.pytorch"
             num_classes: 3
         xchembku_dataface_specification: *XCHEMBKU_DATAFACE_SPECIFICATION
+    context:
+        start_as: direct

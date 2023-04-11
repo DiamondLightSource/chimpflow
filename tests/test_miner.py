@@ -131,7 +131,7 @@ class MinerTester(Base):
 
         # Make a well model to serve as the input to the autolocation finder.
         crystal_well_model = CrystalWellModel(
-            filename="tests/echo_test_imgs/echo_test_im_3.jpg",
+            filename="tests/echo_test_imgs/97wo_01A_1.jpg",
             crystal_plate_uuid=crystal_plate_model.uuid,
         )
         await xchembku.upsert_crystal_wells([crystal_well_model])
