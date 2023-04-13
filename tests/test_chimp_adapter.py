@@ -71,6 +71,7 @@ class ChimpAdapterTester(Base):
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
+            position="01A_1",
             filename="tests/echo_test_imgs/97wo_01A_1.jpg",
             crystal_plate_uuid=str(uuid.uuid4()),
         )
@@ -84,8 +85,8 @@ class ChimpAdapterTester(Base):
 
         assert well_model_autolocation.number_of_crystals == pytest.approx(30, 1)
 
-        assert well_model_autolocation.auto_target_position_x == pytest.approx(479, 3)
-        assert well_model_autolocation.auto_target_position_y == pytest.approx(475, 3)
+        assert well_model_autolocation.auto_target_x == pytest.approx(479, 3)
+        assert well_model_autolocation.auto_target_y == pytest.approx(475, 3)
 
         assert well_model_autolocation.well_centroid_x == 504
         assert well_model_autolocation.well_centroid_y == 600
@@ -95,6 +96,7 @@ class ChimpAdapterTester(Base):
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
+            position="01A_2",
             filename="tests/echo_test_imgs/97wo_01A_2.jpg",
             crystal_plate_uuid=str(uuid.uuid4()),
         )
@@ -108,8 +110,8 @@ class ChimpAdapterTester(Base):
 
         assert well_model_autolocation.number_of_crystals == pytest.approx(13, 1)
 
-        assert well_model_autolocation.auto_target_position_x == pytest.approx(475, 3)
-        assert well_model_autolocation.auto_target_position_y == pytest.approx(745, 3)
+        assert well_model_autolocation.auto_target_x == pytest.approx(475, 3)
+        assert well_model_autolocation.auto_target_y == pytest.approx(745, 3)
 
         assert well_model_autolocation.well_centroid_x == 536
         assert well_model_autolocation.well_centroid_y == 600
@@ -119,6 +121,7 @@ class ChimpAdapterTester(Base):
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
+            position="01A_3",
             filename="tests/echo_test_imgs/97wo_01A_3.jpg",
             crystal_plate_uuid=str(uuid.uuid4()),
         )
@@ -132,8 +135,8 @@ class ChimpAdapterTester(Base):
 
         assert well_model_autolocation.number_of_crystals == pytest.approx(2, 1)
 
-        assert well_model_autolocation.auto_target_position_x == pytest.approx(417, 3)
-        assert well_model_autolocation.auto_target_position_y == pytest.approx(672, 3)
+        assert well_model_autolocation.auto_target_x == pytest.approx(417, 3)
+        assert well_model_autolocation.auto_target_y == pytest.approx(672, 3)
 
         assert well_model_autolocation.well_centroid_x == 504
         assert well_model_autolocation.well_centroid_y == 608

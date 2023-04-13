@@ -131,6 +131,7 @@ class MinerTester(Base):
 
         # Make a well model to serve as the input to the autolocation finder.
         crystal_well_model = CrystalWellModel(
+            position="01A_1",
             filename="tests/echo_test_imgs/97wo_01A_1.jpg",
             crystal_plate_uuid=crystal_plate_model.uuid,
         )
