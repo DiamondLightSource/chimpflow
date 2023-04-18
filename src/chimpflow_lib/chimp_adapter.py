@@ -85,6 +85,9 @@ class ChimpAdapter:
 
         # Calculate well centers.
         coord_generator.calculate_well_centres()
+
+        # Get the output stucture for the first (only) image.
+        # TODO: Store the chimp detector output structure as json in the database.
         output_dict = coord_generator.combined_coords_list[0]
 
         logger.debug(describe("output_dict", output_dict))
@@ -97,13 +100,14 @@ class ChimpAdapter:
         target_position = output_dict["echo_coordinate"]
         if len(target_position) > 0:
             # The target position is a list of (np.int64, np.int64), so have to convert to int.
+            # Coordinate pairs are vertical-first.
             # TODO: Change the CrystalWellAutolocationModel to do type checking on field assignment.
-            model.auto_target_x = int(target_position[0][0])
-            model.auto_target_y = int(target_position[0][1])
+            model.auto_target_x = int(target_position[0][1])
+            model.auto_target_y = int(target_position[0][0])
         well_centroid = output_dict["well_centroid"]
         if well_centroid is not None:
-            model.well_centroid_x = int(well_centroid[0])
-            model.well_centroid_y = int(well_centroid[1])
+            model.well_centroid_x = int(well_centroid[1])
+            model.well_centroid_y = int(well_centroid[0])
         model.number_of_crystals = len(output_dict["xtal_coordinates"])
 
         # TODO: Store the chimp detected crystal coordinates in the model too.
