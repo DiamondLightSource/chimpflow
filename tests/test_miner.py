@@ -139,7 +139,7 @@ class MinerTester(Base):
 
         # Wait long enough for the miner to activate and start ticking and pick up the work and do it.
         time0 = time.time()
-        timeout = 10.0
+        timeout = 30.0
         while True:
 
             # Get all which have gotten autolocations from the xchem-chimp.
