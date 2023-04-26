@@ -88,8 +88,8 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.auto_target_x == pytest.approx(479, 3)
         assert well_model_autolocation.auto_target_y == pytest.approx(475, 3)
 
-        assert well_model_autolocation.well_centroid_x == 504
-        assert well_model_autolocation.well_centroid_y == 600
+        assert well_model_autolocation.well_centroid_x == 600
+        assert well_model_autolocation.well_centroid_y == 504
 
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_2(self, chimp_adapter):
@@ -113,8 +113,8 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.auto_target_x == pytest.approx(475, 3)
         assert well_model_autolocation.auto_target_y == pytest.approx(745, 3)
 
-        assert well_model_autolocation.well_centroid_x == 536
-        assert well_model_autolocation.well_centroid_y == 600
+        assert well_model_autolocation.well_centroid_x == 600
+        assert well_model_autolocation.well_centroid_y == 536
 
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_3(self, chimp_adapter):
@@ -138,5 +138,5 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.auto_target_x == pytest.approx(417, 3)
         assert well_model_autolocation.auto_target_y == pytest.approx(672, 3)
 
-        assert well_model_autolocation.well_centroid_x == 504
-        assert well_model_autolocation.well_centroid_y == 608
+        assert well_model_autolocation.well_centroid_x == 608
+        assert well_model_autolocation.well_centroid_y == 504
