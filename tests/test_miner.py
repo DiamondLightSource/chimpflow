@@ -4,6 +4,8 @@ import multiprocessing
 import os
 import time
 
+# Crystal plate constants.
+from xchembku_api.crystal_plate_objects.constants import ThingTypes
 from xchembku_api.datafaces.context import Context as XchembkuDatafaceClientContext
 
 # Things xchembku provides.
@@ -125,6 +127,7 @@ class MinerTester(Base):
             formulatrix__plate__id=10,
             barcode="98ab",
             visit=visit,
+            thing_type=ThingTypes.SWISS3,
         )
 
         await xchembku.upsert_crystal_plates([crystal_plate_model])

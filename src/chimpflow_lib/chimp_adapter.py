@@ -90,8 +90,6 @@ class ChimpAdapter:
         # TODO: Store the chimp detector output structure as json in the database.
         output_dict = coord_generator.combined_coords_list[0]
 
-        logger.debug(describe("output_dict", output_dict))
-
         # Construct a new autolocation object to hold the results.
         model = CrystalWellAutolocationModel(
             crystal_well_uuid=crystal_well_model.uuid,
