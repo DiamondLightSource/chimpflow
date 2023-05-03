@@ -3,7 +3,6 @@ import warnings
 from pathlib import Path
 from typing import Dict
 
-from dls_utilpack.describe import describe
 from dls_utilpack.require import require
 from xchem_chimp.detector.coord_generator import ChimpXtalCoordGenerator, PointsMode
 from xchembku_api.models.crystal_well_autolocation_model import (
