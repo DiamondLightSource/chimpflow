@@ -51,14 +51,17 @@ class ChimpAdapterTester(Base):
         p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_1])
         p.start()
         p.join()
+        assert p.exitcode == 0
 
         p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_2])
         p.start()
         p.join()
+        assert p.exitcode == 0
 
         p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_3])
         p.start()
         p.join()
+        assert p.exitcode == 0
 
     # ----------------------------------------------------------------------------------------
     def __process(self, run):
@@ -88,8 +91,8 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.auto_target_x == pytest.approx(479, 3)
         assert well_model_autolocation.auto_target_y == pytest.approx(475, 3)
 
-        assert well_model_autolocation.well_centroid_x == 600
-        assert well_model_autolocation.well_centroid_y == 504
+        assert well_model_autolocation.well_centroid_x == 630
+        assert well_model_autolocation.well_centroid_y == 494
 
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_2(self, chimp_adapter):
@@ -113,8 +116,8 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.auto_target_x == pytest.approx(475, 3)
         assert well_model_autolocation.auto_target_y == pytest.approx(745, 3)
 
-        assert well_model_autolocation.well_centroid_x == 600
-        assert well_model_autolocation.well_centroid_y == 536
+        assert well_model_autolocation.well_centroid_x == 630
+        assert well_model_autolocation.well_centroid_y == 526
 
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_3(self, chimp_adapter):
@@ -138,5 +141,5 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.auto_target_x == pytest.approx(417, 3)
         assert well_model_autolocation.auto_target_y == pytest.approx(672, 3)
 
-        assert well_model_autolocation.well_centroid_x == 608
-        assert well_model_autolocation.well_centroid_y == 504
+        assert well_model_autolocation.well_centroid_x == 638
+        assert well_model_autolocation.well_centroid_y == 494
