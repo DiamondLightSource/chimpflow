@@ -69,7 +69,7 @@ class Aiohttp(Thing, BaseAiohttp):
         except Exception as exception:
             logger.exception("exception in miner process", exc_info=exception)
 
-        logger.debug(f"[PIDAL] {callsign(self)} is returning from activate_process")
+        logger.debug(f"[DISSHU] {callsign(self)} is returning from activate_process")
 
     # ----------------------------------------------------------------------------------------
     def activate_thread(self, loop) -> None:

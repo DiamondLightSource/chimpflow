@@ -113,9 +113,9 @@ class DirectPoll(MinerBase):
         self.__xchembku = None
 
         if self.__xchembku_client_context is not None:
-            logger.debug(f"[ECHDON] {callsign(self)} exiting __xchembku_client_context")
+            logger.debug(f"[DISSHU] {callsign(self)} exiting __xchembku_client_context")
             await self.__xchembku_client_context.aexit()
-            logger.debug(f"[ECHDON] {callsign(self)} exited __xchembku_client_context")
+            logger.debug(f"[DISSHU] {callsign(self)} exited __xchembku_client_context")
             self.__xchembku_client_context = None
 
     # ----------------------------------------------------------------------------------------
