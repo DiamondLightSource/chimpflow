@@ -52,11 +52,11 @@ class ChimpAdapterTester(Base):
         self.__run_97wo_01A_2(chimp_adapter)
         self.__run_97wo_01A_3(chimp_adapter)
 
-        # Display the profile results.
+        # Display the profiler's end results.
         logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
 
     # ----------------------------------------------------------------------------------------
-    def __run_97wo_01A_1(self, chimp_adapter):
+    def __run_97wo_01A_1(self, chimp_adapter: ChimpAdapter) -> None:
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
@@ -81,7 +81,7 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.well_centroid_y == 494
 
     # ----------------------------------------------------------------------------------------
-    def __run_97wo_01A_2(self, chimp_adapter):
+    def __run_97wo_01A_2(self, chimp_adapter: ChimpAdapter) -> None:
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(
@@ -106,7 +106,7 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.well_centroid_y == 526
 
     # ----------------------------------------------------------------------------------------
-    def __run_97wo_01A_3(self, chimp_adapter):
+    def __run_97wo_01A_3(self, chimp_adapter: ChimpAdapter) -> None:
 
         # Make a well model to serve as the input to the chimp adapter process method.
         well_model = CrystalWellModel(

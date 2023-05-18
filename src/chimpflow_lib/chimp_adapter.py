@@ -1,9 +1,8 @@
 import logging
 import warnings
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
-from dls_utilpack.describe import describe
 from dls_utilpack.profiler import dls_utilpack_global_profiler
 from dls_utilpack.require import require
 from xchem_chimp.detector.coord_generator import ChimpXtalCoordGenerator, PointsMode
@@ -49,7 +48,7 @@ class ChimpAdapter:
         )
 
         self.__is_activated = False
-        self.__detector = None
+        self.__detector: Optional[ChimpDetector] = None
 
     def activate(self) -> None:
         if self.__is_activated:
@@ -93,6 +92,9 @@ class ChimpAdapter:
         # logger.debug(describe("detector", self.__detector))
         # logger.debug(describe("detector.dataset", self.__detector.dataset))
         # logger.debug(describe("detector.dataset[0]", detector.dataset[0]))
+
+        if self.__detector is None:
+            raise RuntimeError("self.__detector is unexpectedly None")
 
         # Replace the detector's dataset with a single image.
         self.__detector.dataset.imgs = [str(filename)]
