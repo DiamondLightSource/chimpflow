@@ -3,6 +3,7 @@ import warnings
 from pathlib import Path
 from typing import Dict
 
+from dls_utilpack.describe import describe
 from dls_utilpack.profiler import dls_utilpack_global_profiler
 from dls_utilpack.require import require
 from xchem_chimp.detector.coord_generator import ChimpXtalCoordGenerator, PointsMode
@@ -47,6 +48,26 @@ class ChimpAdapter:
             "num_classes",
         )
 
+        self.__is_activated = False
+        self.__detector = None
+
+    def activate(self) -> None:
+        if self.__is_activated:
+            return
+
+        # Use the global profiler.
+        self.__profiler = dls_utilpack_global_profiler()
+
+        # Make a detector object with no images in its dataset yet.
+        with self.__profiler.context("ChimpDetector()"):
+            self.__detector = ChimpDetector(
+                self.__model_path,
+                [],
+                self.__num_classes,
+            )
+
+        self.__is_activated = True
+
     def detect(
         self, crystal_well_model: CrystalWellModel
     ) -> CrystalWellAutolocationModel:
@@ -60,35 +81,35 @@ class ChimpAdapter:
             CrystalWellAutolocationModel: The autolocation data mined from the image for the crystal well.
         """
 
+        # Make sure we're activated.
+        self.activate()
+
         # Filename is full path to the input filename.
         filename: Path = Path(crystal_well_model.filename)
 
         if not filename.exists():
             raise RuntimeError(f"could not find file {str(filename)}")
 
-        # Make a detector object.
-        # TODO: Arrange ChimpDetector internals so that we only have to load
-        # the torch model once per server, instead of once per detection request.
-        profiler = dls_utilpack_global_profiler()
-        with profiler.context("ChimpDetector()"):
-            detector = ChimpDetector(
-                self.__model_path,
-                [str(filename)],
-                self.__num_classes,
-            )
+        # logger.debug(describe("detector", self.__detector))
+        # logger.debug(describe("detector.dataset", self.__detector.dataset))
+        # logger.debug(describe("detector.dataset[0]", detector.dataset[0]))
+
+        # Replace the detector's dataset with a single image.
+        self.__detector.dataset.imgs = [str(filename)]
+        # Reset the detector's generator function (used by ChimpXtalCoordGenerator internally).
+        self.__detector.detector_output = self.__detector.generate_all_predictions()
 
         # Create a coordiate generator object.
-        with profiler.context("ChimpXtalCoordGenerator()"):
-            coord_generator = ChimpXtalCoordGenerator(
-                detector, points_mode=PointsMode.SINGLE, extract_echo=True
-            )
+        coord_generator = ChimpXtalCoordGenerator(
+            self.__detector, points_mode=PointsMode.SINGLE, extract_echo=True
+        )
 
         # Extract the crystal coordinates.
-        with profiler.context("coord_generator.extract_coordinates()"):
+        with self.__profiler.context("coord_generator.extract_coordinates()"):
             coord_generator.extract_coordinates()
 
         # Calculate well centers.
-        with profiler.context("coord_generator.calculate_well_centres()"):
+        with self.__profiler.context("coord_generator.calculate_well_centres()"):
             coord_generator.calculate_well_centres()
 
         # Get the output stucture for the first (only) image.

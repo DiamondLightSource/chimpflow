@@ -1,5 +1,4 @@
 import logging
-import multiprocessing
 import uuid
 import warnings
 
@@ -47,28 +46,14 @@ class ChimpAdapterTester(Base):
             "num_classes": 3,
         }
 
-        # Do the work in a separate process.
-        # TODO: Figure out how to release resources from torchvision in process.
-        p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_1])
-        p.start()
-        p.join()
-        assert p.exitcode == 0
-
-        p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_2])
-        p.start()
-        p.join()
-        assert p.exitcode == 0
-
-        p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_3])
-        p.start()
-        p.join()
-        assert p.exitcode == 0
-
-    # ----------------------------------------------------------------------------------------
-    def __process(self, run):
         chimp_adapter = ChimpAdapter(self.__specification)
 
-        run(chimp_adapter)
+        self.__run_97wo_01A_1(chimp_adapter)
+        self.__run_97wo_01A_2(chimp_adapter)
+        self.__run_97wo_01A_3(chimp_adapter)
+
+        # Display the profile results.
+        logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
 
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_1(self, chimp_adapter):
@@ -95,8 +80,6 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.well_centroid_x == 630
         assert well_model_autolocation.well_centroid_y == 494
 
-        logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
-
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_2(self, chimp_adapter):
 
@@ -122,8 +105,6 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.well_centroid_x == 630
         assert well_model_autolocation.well_centroid_y == 526
 
-        logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
-
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_3(self, chimp_adapter):
 
@@ -148,5 +129,3 @@ class ChimpAdapterTester(Base):
 
         assert well_model_autolocation.well_centroid_x == 638
         assert well_model_autolocation.well_centroid_y == 494
-
-        logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
