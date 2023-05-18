@@ -3,6 +3,7 @@ import warnings
 from pathlib import Path
 from typing import Dict
 
+from dls_utilpack.profiler import dls_utilpack_global_profiler
 from dls_utilpack.require import require
 from xchem_chimp.detector.coord_generator import ChimpXtalCoordGenerator, PointsMode
 from xchembku_api.models.crystal_well_autolocation_model import (
@@ -68,22 +69,27 @@ class ChimpAdapter:
         # Make a detector object.
         # TODO: Arrange ChimpDetector internals so that we only have to load
         # the torch model once per server, instead of once per detection request.
-        detector = ChimpDetector(
-            self.__model_path,
-            [str(filename)],
-            self.__num_classes,
-        )
+        profiler = dls_utilpack_global_profiler()
+        with profiler.context("ChimpDetector()"):
+            detector = ChimpDetector(
+                self.__model_path,
+                [str(filename)],
+                self.__num_classes,
+            )
 
         # Create a coordiate generator object.
-        coord_generator = ChimpXtalCoordGenerator(
-            detector, points_mode=PointsMode.SINGLE, extract_echo=True
-        )
+        with profiler.context("ChimpXtalCoordGenerator()"):
+            coord_generator = ChimpXtalCoordGenerator(
+                detector, points_mode=PointsMode.SINGLE, extract_echo=True
+            )
 
         # Extract the crystal coordinates.
-        coord_generator.extract_coordinates()
+        with profiler.context("coord_generator.extract_coordinates()"):
+            coord_generator.extract_coordinates()
 
         # Calculate well centers.
-        coord_generator.calculate_well_centres()
+        with profiler.context("coord_generator.calculate_well_centres()"):
+            coord_generator.calculate_well_centres()
 
         # Get the output stucture for the first (only) image.
         # TODO: Store the chimp detector output structure as json in the database.

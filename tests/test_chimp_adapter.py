@@ -4,6 +4,7 @@ import uuid
 import warnings
 
 import pytest
+from dls_utilpack.profiler import dls_utilpack_global_profiler
 from xchembku_api.models.crystal_well_autolocation_model import (
     CrystalWellAutolocationModel,
 )
@@ -94,6 +95,8 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.well_centroid_x == 630
         assert well_model_autolocation.well_centroid_y == 494
 
+        logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
+
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_2(self, chimp_adapter):
 
@@ -119,6 +122,8 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.well_centroid_x == 630
         assert well_model_autolocation.well_centroid_y == 526
 
+        logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
+
     # ----------------------------------------------------------------------------------------
     def __run_97wo_01A_3(self, chimp_adapter):
 
@@ -143,3 +148,5 @@ class ChimpAdapterTester(Base):
 
         assert well_model_autolocation.well_centroid_x == 638
         assert well_model_autolocation.well_centroid_y == 494
+
+        logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
