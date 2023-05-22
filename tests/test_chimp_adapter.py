@@ -10,6 +10,8 @@ from xchembku_api.models.crystal_well_autolocation_model import (
 )
 from xchembku_api.models.crystal_well_model import CrystalWellModel
 
+from chimpflow_api.constants import WELL_CENTROID_ALGORITHMS
+
 # Base class for the tester.
 from tests.base import Base
 
@@ -45,22 +47,49 @@ class ChimpAdapterTester(Base):
         self.__specification = {
             "model_path": constants["model_path"],
             "num_classes": 3,
+            "well_centroid_algorithm": WELL_CENTROID_ALGORITHMS.TEXRANK_LIKE,
         }
 
         # Do the work in a separate process since the torchvision won't release unless its process quits.
         # If it doesn't release, then subsequent pytest cases wait forever.
         # TODO: Figure out how to release resources from torchvision within a process.
-        p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_1])
+        p = multiprocessing.Process(
+            target=self.__process1,
+        )
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+
+        # ------------------------------------------------------------------
+        # Make a specification for the chimp adapter, this time with no centroid algorithm.
+        self.__specification = {
+            "model_path": constants["model_path"],
+            "num_classes": 3,
+            # No specified algorithm.
+            # "well_centroid_algorithm": WELL_CENTROID_ALGORITHMS.TEXRANK_LIKE,
+        }
+
+        p = multiprocessing.Process(
+            target=self.__process2,
+        )
         p.start()
         p.join()
         assert p.exitcode == 0
 
     # ----------------------------------------------------------------------------------------
-    def __process(self, run):
+    def __process1(self):
         chimp_adapter = ChimpAdapter(self.__specification)
 
         self.__run_97wo_01A_1(chimp_adapter)
         self.__run_97wo_01A_2(chimp_adapter)
+
+        # Display the profiler's end results.
+        logger.debug(f"profile\n{dls_utilpack_global_profiler()}")
+
+    # ----------------------------------------------------------------------------------------
+    def __process2(self):
+        chimp_adapter = ChimpAdapter(self.__specification)
+
         self.__run_97wo_01A_3(chimp_adapter)
 
         # Display the profiler's end results.
@@ -138,5 +167,6 @@ class ChimpAdapterTester(Base):
         assert well_model_autolocation.auto_target_x == pytest.approx(417, 3)
         assert well_model_autolocation.auto_target_y == pytest.approx(672, 3)
 
-        assert well_model_autolocation.well_centroid_x == 638
-        assert well_model_autolocation.well_centroid_y == 494
+        # Centroid in this test comes from image central pixel.
+        assert well_model_autolocation.well_centroid_x == 612
+        assert well_model_autolocation.well_centroid_y == 512

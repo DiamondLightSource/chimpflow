@@ -11,6 +11,8 @@ from xchembku_api.models.crystal_well_autolocation_model import (
 )
 from xchembku_api.models.crystal_well_model import CrystalWellModel
 
+from chimpflow_api.constants import WELL_CENTROID_ALGORITHMS
+
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     from xchem_chimp.detector.chimp_detector import ChimpDetector
@@ -46,6 +48,21 @@ class ChimpAdapter:
             specification,
             "num_classes",
         )
+
+        # Caller specifies the well centroid algorithm they want to use.
+        # None means don't calculate well centroid.
+        self.__well_centroid_algorithm = specification.get("well_centroid_algorithm")
+
+        if self.__well_centroid_algorithm == WELL_CENTROID_ALGORITHMS.TEXRANK_LIKE:
+            pass
+        elif self.__well_centroid_algorithm == WELL_CENTROID_ALGORITHMS.MIDDLE_PIXEL:
+            pass
+        elif self.__well_centroid_algorithm is None:
+            pass
+        else:
+            raise RuntimeError(
+                "configuration error: invalid well_centroid_algorithm '{self.__well_centroid_algorithm}'"
+            )
 
         self.__is_activated = False
         self.__detector: Optional[ChimpDetector] = None
@@ -110,9 +127,10 @@ class ChimpAdapter:
         with self.__profiler.context("coord_generator.extract_coordinates()"):
             coord_generator.extract_coordinates()
 
-        # Calculate well centers.
-        with self.__profiler.context("coord_generator.calculate_well_centres()"):
-            coord_generator.calculate_well_centres()
+        if self.__well_centroid_algorithm == WELL_CENTROID_ALGORITHMS.TEXRANK_LIKE:
+            # Calculate well centers.
+            with self.__profiler.context("coord_generator.calculate_well_centres()"):
+                coord_generator.calculate_well_centres()
 
         # Get the output stucture for the first (only) image.
         # TODO: Store the chimp detector output structure as json in the database.
@@ -123,17 +141,36 @@ class ChimpAdapter:
             crystal_well_uuid=crystal_well_model.uuid,
         )
         model.drop_detected = output_dict["drop_detected"]
-        target_position = output_dict["echo_coordinate"]
+        target_position = require(
+            "coord_generator output_dict",
+            output_dict,
+            "echo_coordinate",
+        )
         if len(target_position) > 0:
             # The target position is a list of (np.int64, np.int64), so have to convert to int.
             # Coordinate pairs are vertical-first.
             # TODO: Change the CrystalWellAutolocationModel to do type checking on field assignment.
             model.auto_target_x = int(target_position[0][1])
             model.auto_target_y = int(target_position[0][0])
-        well_centroid = output_dict["well_centroid"]
-        if well_centroid is not None:
+
+        if self.__well_centroid_algorithm == WELL_CENTROID_ALGORITHMS.TEXRANK_LIKE:
+            well_centroid = require(
+                "coord_generator output_dict",
+                output_dict,
+                "well_centroid",
+            )
             model.well_centroid_x = int(well_centroid[1])
             model.well_centroid_y = int(well_centroid[0])
+        # Anything else is assumed MIDDLE_PIXEL.
+        else:
+            original_image_shape = require(
+                "coord_generator output_dict",
+                output_dict,
+                "original_image_shape",
+            )
+            model.well_centroid_x = int(original_image_shape[1] / 2.0)
+            model.well_centroid_y = int(original_image_shape[0] / 2.0)
+
         model.number_of_crystals = len(output_dict["xtal_coordinates"])
 
         # TODO: Store the chimp detected crystal coordinates in the model too.
