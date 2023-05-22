@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import uuid
 import warnings
 
@@ -46,6 +47,16 @@ class ChimpAdapterTester(Base):
             "num_classes": 3,
         }
 
+        # Do the work in a separate process since the torchvision won't release unless its process quits.
+        # If it doesn't release, then subsequent pytest cases wait forever.
+        # TODO: Figure out how to release resources from torchvision within a process.
+        p = multiprocessing.Process(target=self.__process, args=[self.__run_97wo_01A_1])
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+
+    # ----------------------------------------------------------------------------------------
+    def __process(self, run):
         chimp_adapter = ChimpAdapter(self.__specification)
 
         self.__run_97wo_01A_1(chimp_adapter)
