@@ -1,0 +1,73 @@
+type: dls_multiconf.classic
+
+logging_settings:
+    console:
+        enabled: True
+        verbose: True
+    logfile:
+        enabled: True
+        directory: ${output_directory}/logfile.log
+    graypy:
+        enabled: False
+        host: 172.23.7.128
+        port: 12201
+        protocol: UDP
+
+# The external access bits.
+external_access_bits:
+    xchembku_dataface_server: &XCHEMBKU_DATAFACE_SERVER http://*:27821
+    xchembku_dataface_client: &XCHEMBKU_DATAFACE_CLIENT http://localhost:27821
+    chimpflow_miner_server: &CHIMPFLOW_MINER_SERVER http://*:27825
+    chimpflow_miner_client: &CHIMPFLOW_MINER_CLIENT http://localhost:27825
+
+# -----------------------------------------------------------------------------
+# The xchembku_dataface direct access.
+xchembku_dataface_specification_direct: &XCHEMBKU_DATAFACE_SPECIFICATION_DIRECT
+    type: "xchembku_lib.xchembku_datafaces.direct"
+    should_drop_database: True
+    database:
+        type: "dls_normsql.aiomysql"
+        type_specific_tbd:
+            database_name: "xchembku_pytest"
+            host: $MYSQL_HOST
+            port: $MYSQL_PORT
+            username: "root"
+            password: "root"
+
+# The xchembku_dataface client/server composite.
+xchembku_dataface_specification: &XCHEMBKU_DATAFACE_SPECIFICATION
+    type: "xchembku_lib.xchembku_datafaces.aiohttp"
+    type_specific_tbd:
+        # The remote xchembku_dataface server access.
+        aiohttp_specification:
+            server: *XCHEMBKU_DATAFACE_SERVER
+            client: *XCHEMBKU_DATAFACE_CLIENT
+        # The local implementation of the xchembku_dataface.
+        actual_xchembku_dataface_specification: *XCHEMBKU_DATAFACE_SPECIFICATION_DIRECT
+    context:
+        start_as: process
+
+# -----------------------------------------------------------------------------
+# The chimpflow direct access.
+chimpflow_miner_specification_direct_poll:
+    &CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
+    type: "chimpflow_lib.miners.direct_poll"
+    type_specific_tbd:
+        chimp_adapter:
+            # In pytest conftest.py, this file gets downloaded from Zenodo.
+            model_path: "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ.pytorch"
+            num_classes: 3
+        xchembku_dataface_specification: *XCHEMBKU_DATAFACE_SPECIFICATION
+
+# The chimpflow client/server composite.
+chimpflow_miner_specification:
+    type: "chimpflow_lib.miners.aiohttp"
+    type_specific_tbd:
+        # The remote chimpflow server access.
+        aiohttp_specification:
+            server: *CHIMPFLOW_MINER_SERVER
+            client: *CHIMPFLOW_MINER_CLIENT
+        # The local implementation of the chimpflow.
+        direct_miner_specification: *CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
+    context:
+        start_as: process

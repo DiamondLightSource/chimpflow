@@ -55,7 +55,7 @@ class TestMinerDirectPoll:
 
 
 # ----------------------------------------------------------------------------------------
-class TestMinerService:
+class TestMinerServiceSqlite:
     """
     Test miner interface through network interface.
     """
@@ -63,7 +63,21 @@ class TestMinerService:
     def test(self, constants, logging_setup, output_directory):
 
         # Configuration file to use.
-        configuration_file = "tests/configurations/service.yaml"
+        configuration_file = "tests/configurations/service_sqlite.yaml"
+
+        MinerTester().main(constants, configuration_file, output_directory)
+
+
+# ----------------------------------------------------------------------------------------
+class TestMinerServiceMysql:
+    """
+    Test miner interface through network interface.
+    """
+
+    def test(self, constants, logging_setup, output_directory):
+
+        # Configuration file to use.
+        configuration_file = "tests/configurations/service_mysql.yaml"
 
         MinerTester().main(constants, configuration_file, output_directory)
 
