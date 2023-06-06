@@ -6,13 +6,14 @@ import time
 
 # Crystal plate constants.
 from xchembku_api.crystal_plate_objects.constants import ThingTypes
-from xchembku_api.datafaces.context import Context as XchembkuDatafaceClientContext
 
 # Things xchembku provides.
+from xchembku_api.datafaces.context import Context as XchembkuDatafaceClientContext
 from xchembku_api.datafaces.datafaces import xchembku_datafaces_get_default
 from xchembku_api.models.crystal_plate_model import CrystalPlateModel
 from xchembku_api.models.crystal_well_filter_model import CrystalWellFilterModel
 from xchembku_api.models.crystal_well_model import CrystalWellModel
+from xchembku_lib.datafaces.context import Context as XchembkuDatafaceServerContext
 
 # Client context creator.
 from chimpflow_api.miners.context import Context as MinerClientContext
@@ -35,7 +36,7 @@ class TestMinerDirectPoll:
     def test(self, constants, logging_setup, output_directory):
 
         # Configuration file to use.
-        configuration_file = "tests/configurations/direct_poll.yaml"
+        configuration_file = "tests/configurations/direct_sqlite.yaml"
 
         # Do the work in a separate process so that the Service test
         # can also be run in the same pytest invocation.
@@ -88,7 +89,11 @@ class MinerTester(Base):
             "xchembku_dataface_specification"
         ]
 
-        # Reference the dict entry for the xchembku dataface.
+        # Make the xchembku server context.
+        xchembku_server_context = XchembkuDatafaceServerContext(
+            xchembku_dataface_specification
+        )
+        # Make the xchembku client context.
         xchembku_client_context = XchembkuDatafaceClientContext(
             xchembku_dataface_specification
         )
@@ -102,13 +107,15 @@ class MinerTester(Base):
 
         image_count = 1
 
-        # Start the client context for the direct access to the xchembku.
+        # Start the client context for the remote access to the xchembku.
         async with xchembku_client_context:
-            # Start the matching xchembku client context.
-            async with miner_client_context:
-                # Start the miner server context.
-                async with miner_server_context:
-                    await self.__run_part1(image_count, constants, output_directory)
+            # Start the server context xchembku which starts the process.
+            async with xchembku_server_context:
+                # Start the miner client context.
+                async with miner_client_context:
+                    # Start the miner server context.
+                    async with miner_server_context:
+                        await self.__run_part1(image_count, constants, output_directory)
 
     # ----------------------------------------------------------------------------------------
 

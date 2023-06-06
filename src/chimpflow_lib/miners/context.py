@@ -1,11 +1,11 @@
 import logging
 from typing import Dict
 
-# Base class for an asyncio context.
-from chimpflow_lib.contexts.base import Base as ContextBase
+# Base class for an asyncio server context.
+from dls_utilpack.server_context_base import ServerContextBase
 
 # Things created in the context.
-from chimpflow_lib.miners.miners import Miners, miners_set_default
+from chimpflow_lib.miners.miners import Miners
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 thing_type = "chimpflow_lib.miners.context"
 
 
-class Context(ContextBase):
+class Context(ServerContextBase):
     """
     Asyncio context for a miner object.
     On entering, it creates the object according to the specification (a dict).
@@ -29,10 +29,10 @@ class Context(ContextBase):
 
         Args:
             specification (Dict): specification of the miner object to be constructed within the context.
-                The only key in the specification that relates to the context is "start_as", which can be "coro", "thread", "process" or None.
+                The only key in the specification that relates to the context is "start_as", which can be "coro", "thread", "process", "direct", or None.
                 All other keys in the specification relate to creating the miner object.
         """
-        ContextBase.__init__(self, thing_type, specification)
+        ServerContextBase.__init__(self, thing_type, specification)
 
     # ----------------------------------------------------------------------------------------
     async def aenter(self) -> None:
@@ -46,9 +46,6 @@ class Context(ContextBase):
 
         # Build the object according to the specification.
         self.server = Miners().build_object(self.specification())
-
-        # If there is more than one miner, the last one defined will be the default.
-        miners_set_default(self.server)
 
         if self.context_specification.get("start_as") == "coro":
             await self.server.activate_coro()
@@ -65,7 +62,7 @@ class Context(ContextBase):
             await self.server.activate()
 
     # ----------------------------------------------------------------------------------------
-    async def aexit(self) -> None:
+    async def aexit(self, type, value, traceback) -> None:
         """
         Asyncio context exit.
 
@@ -74,12 +71,8 @@ class Context(ContextBase):
 
         if self.server is not None:
             if self.context_specification.get("start_as") == "process":
-                logger.info(
-                    "[DISSHU] in context exit, sending shutdown to client process"
-                )
                 # Put in request to shutdown the server.
                 await self.server.client_shutdown()
-                logger.info("[DISSHU] in context exit, sent shutdown to client process")
 
             if self.context_specification.get("start_as") == "coro":
                 await self.server.direct_shutdown()
