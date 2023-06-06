@@ -1,7 +1,7 @@
 import logging
 
 # Base class.
-from chimpflow_api.context_base import ContextBase
+from dls_utilpack.client_context_base import ClientContextBase
 
 # Things created in the context.
 from chimpflow_api.miners.miners import Miners, chimpflow_miners_set_default
@@ -9,18 +9,18 @@ from chimpflow_api.miners.miners import Miners, chimpflow_miners_set_default
 logger = logging.getLogger(__name__)
 
 
-class Context(ContextBase):
+class Context(ClientContextBase):
     """
     Client context for a chimpflow_miner object.
     On entering, it creates the object according to the specification (a dict).
     On exiting, it closes client connection.
 
-    The aenter and aexit methods are exposed for use by an enclosing context.
+    The aenter and aexit methods are exposed for use by an enclosing context and the base class.
     """
 
     # ----------------------------------------------------------------------------------------
     def __init__(self, specification):
-        ContextBase.__init__(self, specification)
+        ClientContextBase.__init__(self, specification)
 
     # ----------------------------------------------------------------------------------------
     async def aenter(self):

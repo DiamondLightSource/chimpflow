@@ -1,5 +1,5 @@
 # ********** Please don't edit this file!
-# ********** It has been generated automatically by dae_devops version 0.5.2.
+# ********** It has been generated automatically by dae_devops version 0.5.3.
 # ********** For repository_name chimpflow
 
 from pathlib import Path
@@ -188,7 +188,7 @@ ultimate_replacements = {
     "$" + "{repository_name}": "chimpflow",
     "$" + "{package_name}": "chimpflow_lib",
     "$" + "{git_url}": "https://github.com/diamondlightsource/chimpflow",
-    "$" + "{python_version_at_least}": "3.9",
+    "$" + "{python_version_at_least}": "3.10",
 }
 
 
@@ -197,4 +197,4 @@ def setup(app):
     app.connect("source-read", ultimateReplace)
 
 
-# dae_devops_fingerprint b80ddf31fa2e6cb77cfd3f049739c5c3
+# dae_devops_fingerprint 2454d977ead961b176ee3b27ab8bf6ef

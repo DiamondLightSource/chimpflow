@@ -17,8 +17,6 @@ logging_settings:
 external_access_bits:
     xchembku_dataface_server: &XCHEMBKU_DATAFACE_SERVER http://*:27821
     xchembku_dataface_client: &XCHEMBKU_DATAFACE_CLIENT http://localhost:27821
-    chimpflow_miner_server: &CHIMPFLOW_MINER_SERVER http://*:27825
-    chimpflow_miner_client: &CHIMPFLOW_MINER_CLIENT http://localhost:27825
 
 # -----------------------------------------------------------------------------
 # The xchembku_dataface direct access.
@@ -42,10 +40,9 @@ xchembku_dataface_specification: &XCHEMBKU_DATAFACE_SPECIFICATION
     context:
         start_as: process
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # The chimpflow direct access.
-chimpflow_miner_specification_direct_poll:
-    &CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
+chimpflow_miner_specification:
     type: "chimpflow_lib.miners.direct_poll"
     type_specific_tbd:
         chimp_adapter:
@@ -53,16 +50,5 @@ chimpflow_miner_specification_direct_poll:
             model_path: "2022-12-07_CHiMP_Mask_R_CNN_XChem_50eph_VMXi_finetune_DICT_NZ.pytorch"
             num_classes: 3
         xchembku_dataface_specification: *XCHEMBKU_DATAFACE_SPECIFICATION
-
-# The chimpflow client/server composite.
-chimpflow_miner_specification:
-    type: "chimpflow_lib.miners.aiohttp"
-    type_specific_tbd:
-        # The remote chimpflow server access.
-        aiohttp_specification:
-            server: *CHIMPFLOW_MINER_SERVER
-            client: *CHIMPFLOW_MINER_CLIENT
-        # The local implementation of the chimpflow.
-        direct_miner_specification: *CHIMPFLOW_COLLECTOR_SPECIFICATION_DIRECT_POLL
     context:
-        start_as: process
+        start_as: direct
