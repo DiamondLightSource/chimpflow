@@ -1,0 +1,602 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chimpflow_lib.miners.direct_poll &#8212; chimpflow 1.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/chimpflow_lib/miners/direct_poll';</script>
+    <link rel="icon" href="../../../_static/dls-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/dls-logo.svg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../../_static/dls-logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">chimpflow</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+                        Tutorials
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../how-to/index.html">
+                        How-to Guides
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../explanations/index.html">
+                        Explanations
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/diamondlightsource/chimpflow/chimpflow" title="GitLab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-gitlab"></i></span>
+            <label class="sr-only">GitLab</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+                        Tutorials
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../how-to/index.html">
+                        How-to Guides
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../explanations/index.html">
+                        Explanations
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/diamondlightsource/chimpflow/chimpflow" title="GitLab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-gitlab"></i></span>
+            <label class="sr-only">GitLab</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">chimpflow_lib.miners.direct_poll</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for chimpflow_lib.miners.direct_poll</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">dls_utilpack.callsign</span> <span class="kn">import</span> <span class="n">callsign</span>
+<span class="kn">from</span> <span class="nn">dls_utilpack.explain</span> <span class="kn">import</span> <span class="n">explain2</span>
+<span class="kn">from</span> <span class="nn">dls_utilpack.require</span> <span class="kn">import</span> <span class="n">require</span>
+
+<span class="c1"># Dataface client context.</span>
+<span class="kn">from</span> <span class="nn">xchembku_api.datafaces.context</span> <span class="kn">import</span> <span class="n">Context</span> <span class="k">as</span> <span class="n">XchembkuDatafaceClientContext</span>
+<span class="kn">from</span> <span class="nn">xchembku_api.models.crystal_well_autolocation_model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CrystalWellAutolocationModel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">xchembku_api.models.crystal_well_model</span> <span class="kn">import</span> <span class="n">CrystalWellModel</span>
+
+<span class="c1"># Miner adapter to chimp package.</span>
+<span class="kn">from</span> <span class="nn">chimpflow_lib.chimp_adapter</span> <span class="kn">import</span> <span class="n">ChimpAdapter</span>
+
+<span class="c1"># Base class for miner instances.</span>
+<span class="kn">from</span> <span class="nn">chimpflow_lib.miners.base</span> <span class="kn">import</span> <span class="n">Base</span> <span class="k">as</span> <span class="n">MinerBase</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">thing_type</span> <span class="o">=</span> <span class="s2">&quot;chimpflow_lib.miners.direct_poll&quot;</span>
+
+
+<span class="c1"># ------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="DirectPoll"><a class="viewcode-back" href="../../../reference/classes.html#chimpflow_lib.miners.direct_poll.DirectPoll">[docs]</a><span class="k">class</span> <span class="nc">DirectPoll</span><span class="p">(</span><span class="n">MinerBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing an image miner.</span>
+<span class="sd">    The behavior is to start a coro task to waken every few seconds and query xchembku for eligible images.</span>
+<span class="sd">    The images are processed using the chimpflow.Miner class.  (This is an adapter to the chimp package.)</span>
+<span class="sd">    Results are pushed to xchembku.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specification</span><span class="p">,</span> <span class="n">predefined_uuid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">MinerBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">thing_type</span><span class="p">,</span> <span class="n">specification</span><span class="p">,</span> <span class="n">predefined_uuid</span><span class="o">=</span><span class="n">predefined_uuid</span>
+        <span class="p">)</span>
+
+        <span class="c1"># The specification, s for short.</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callsign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> specification&quot;</span>
+
+        <span class="c1"># The type-specific part, t for short.</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">specification</span><span class="p">(),</span> <span class="s2">&quot;type_specific_tbd&quot;</span><span class="p">)</span>
+
+        <span class="c1"># The chimp adapter configuration.</span>
+        <span class="n">chimp_adapter_specification</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> type_specific_tbd&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s2">&quot;chimp_adapter&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># We will use the dataface to discover previously processed files.</span>
+        <span class="c1"># We will also discovery newly find files into this database.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku_client_context</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># This flag will stop the ticking async task.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__keep_ticking</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tick_future</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Make a reusable chimp adapter.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__chimp_adapter</span> <span class="o">=</span> <span class="n">ChimpAdapter</span><span class="p">(</span><span class="n">chimp_adapter_specification</span><span class="p">)</span>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="DirectPoll.activate"><a class="viewcode-back" href="../../../reference/classes.html#chimpflow_lib.miners.direct_poll.DirectPoll.activate">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Activate the object.</span>
+
+<span class="sd">        This implementation just starts the coro task to awaken every few seconds</span>
+<span class="sd">        and query xchembku and do chimp crystal processing on what it is given.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Make the xchembku client context.</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callsign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> specification&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">specification</span><span class="p">(),</span>
+            <span class="s2">&quot;type_specific_tbd&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">callsign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> type_specific_tbd&quot;</span><span class="p">,</span>
+            <span class="n">s</span><span class="p">,</span>
+            <span class="s2">&quot;xchembku_dataface_specification&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku_client_context</span> <span class="o">=</span> <span class="n">XchembkuDatafaceClientContext</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="c1"># Activate the context.</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku_client_context</span><span class="o">.</span><span class="n">aenter</span><span class="p">()</span>
+
+        <span class="c1"># Get a reference to the xchembku interface provided by the context.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku_client_context</span><span class="o">.</span><span class="n">get_interface</span><span class="p">()</span>
+
+        <span class="c1"># Poll periodically.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tick_future</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tick</span><span class="p">())</span></div>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="DirectPoll.deactivate"><a class="viewcode-back" href="../../../reference/classes.html#chimpflow_lib.miners.direct_poll.DirectPoll.deactivate">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deactivate the object.</span>
+
+<span class="sd">        Causes the coro task to stop.</span>
+
+<span class="sd">        This implementation then releases resources relating to the xchembku connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tick_future</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Set flag to stop the periodic ticking.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__keep_ticking</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># Wait for the ticking to stop.</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tick_future</span>
+
+        <span class="c1"># Forget we have an xchembku client reference.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku_client_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[DISSHU] </span><span class="si">{</span><span class="n">callsign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> exiting __xchembku_client_context&quot;</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku_client_context</span><span class="o">.</span><span class="n">aexit</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[DISSHU] </span><span class="si">{</span><span class="n">callsign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> exited __xchembku_client_context&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku_client_context</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="DirectPoll.tick"><a class="viewcode-back" href="../../../reference/classes.html#chimpflow_lib.miners.direct_poll.DirectPoll.tick">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A coro task which does periodic checking for new eligible images from xchembku.</span>
+
+<span class="sd">        Stops when flag has been set by other tasks.</span>
+
+<span class="sd">        # TODO: Use an event to awaken ticker early to handle stop requests sooner.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">__keep_ticking</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_and_chimp</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">explain2</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s2">&quot;query_and_chimp&quot;</span><span class="p">),</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">exception</span><span class="p">)</span>
+
+            <span class="c1"># TODO: Make periodic tick period to be configurable.</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span></div>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="DirectPoll.query_and_chimp"><a class="viewcode-back" href="../../../reference/classes.html#chimpflow_lib.miners.direct_poll.DirectPoll.query_and_chimp">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">query_and_chimp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query for work from xchembku and do the chimp processing immediately.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get eligible wells from xchembku.</span>
+        <span class="n">well_models</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+            <span class="n">CrystalWellModel</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku</span><span class="o">.</span><span class="n">fetch_crystal_wells_needing_autolocation</span><span class="p">(</span>
+            <span class="n">why</span><span class="o">=</span><span class="s2">&quot;[CHIMPFLOW POLL]&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">well_models</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Start a list of results.</span>
+        <span class="n">autolocation_models</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CrystalWellAutolocationModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">well_model</span> <span class="ow">in</span> <span class="n">well_models</span><span class="p">:</span>
+            <span class="c1"># Do the chimp processing.</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;starting chimp process for </span><span class="si">{</span><span class="n">well_model</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">autolocation_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chimp_adapter</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">well_model</span><span class="p">)</span>
+
+            <span class="c1"># Add to the list for uploading.</span>
+            <span class="n">autolocation_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">autolocation_model</span><span class="p">)</span>
+
+        <span class="c1"># Send the chimp results to xchembku for storage.</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__xchembku</span><span class="o">.</span><span class="n">originate_crystal_well_autolocations</span><span class="p">(</span><span class="n">autolocation_models</span><span class="p">)</span></div>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">close_client_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+
+        <span class="k">pass</span></div>
+</pre></div>
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
